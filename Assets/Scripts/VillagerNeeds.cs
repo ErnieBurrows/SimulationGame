@@ -5,6 +5,8 @@ public class VillagerNeeds
 {
     public float thirst = 1;
     public float hunger = 1;
+    public float thirstThreshold = 0.2f;
+    public float hungerThreshold = 0.1f;
     public bool isInWater = false;
     public bool isUIOpen = false;
 
@@ -12,6 +14,6 @@ public class VillagerNeeds
     public float tickRate = 0.1f;
 
     [Tooltip("The percentage (Measured in decimal) that the water drains per tick")]
-    public float thirstDrainRate = 0.001f, hungerDrainRate = 0.001f;
+    public float thirstDrainRate = 0.005f, hungerDrainRate = 0.001f;
 
 }

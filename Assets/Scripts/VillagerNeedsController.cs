@@ -8,7 +8,7 @@ public class VillagerNeedsController : MonoBehaviour
 {
     public VillagerNeeds Needs { get; private set; }
 
-     public event Action<float> OnThirstChanged;
+    public event Action<float> OnThirstChanged;
     public event Action<float> OnHungerChanged;
 
     public void Initialize(VillagerNeeds needs)
@@ -32,8 +32,24 @@ public class VillagerNeedsController : MonoBehaviour
             Needs.hunger -= Needs.hungerDrainRate;
             OnHungerChanged?.Invoke(Needs.hunger);
 
+            if (Needs.thirst < Needs.thirstThreshold)
+               HandleThirsty();
+
+            if (Needs.hunger < Needs.hungerThreshold)
+                HandleHunger();
+
             yield return new WaitForSeconds(Needs.tickRate);
         }
+    }
+
+    private void HandleThirsty()
+    {
+         Debug.Log("Damn I am Thirsty");
+    }
+
+    private void HandleHunger()
+    {
+        Debug.Log("Shit I am Hungry");
     }
 }
   

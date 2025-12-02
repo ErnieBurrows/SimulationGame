@@ -1,18 +1,11 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-
-    // Todo: Create a class that holds the villages needs.
-    // Give each villager and instance of the above class.
-    // When click on a specific villager they will show UI that shows their needs.
-
-    //Todo: Fix the system that drains and adds needs. The courtines are overlapping.
-    // Todo: I honestly think I need to have a function called simulate needs or something. And it simulates all villager needs.
-
+    // Todo: Begin creating AI for the village that will move to whatever it needs most.
+    // Todo: Create a class for the objects that hold needs. i.e well.
+    // Todo: This object will need to be drained or filled depending on what is happening.
+    // Todo: Create and actual AI controller for the character and move the stuff out of VillagerNeedsController.
     
-    // Begin creating AI for the village that will move to whatever it needs most.
-    // Create a class for the objects that hold needs. i.e well.
-    // This object will need to be drained or filled depending on what is happening.
 public class Villager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerClickHandler, IEndDragHandler
 {
     [SerializeField] private VillagerNeedsController needsController;
