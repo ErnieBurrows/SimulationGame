@@ -5,7 +5,8 @@ using UnityEngine.EventSystems;
     // Todo: Create a class for the objects that hold needs. i.e well.
     // Todo: This object will need to be drained or filled depending on what is happening.
     // Todo: Create and actual AI controller for the character and move the stuff out of VillagerNeedsController.
-    
+    // Todo: Create SO data objects that we can use to init the villager Data.
+
 public class Villager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerClickHandler, IEndDragHandler
 {
     [SerializeField] private VillagerNeedsController needsController;

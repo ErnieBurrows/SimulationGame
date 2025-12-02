@@ -66,5 +66,8 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "U.SimulationGame.slnx"
+    "dotnet.defaultSolution": "U.SimulationGame.slnx",
+    "cSpell.words": [
+        "Navmesh"
+    ]
 }

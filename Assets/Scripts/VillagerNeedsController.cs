@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,9 +8,19 @@ using UnityEngine.UI;
 public class VillagerNeedsController : MonoBehaviour
 {
     public VillagerNeeds Needs { get; private set; }
-
     public event Action<float> OnThirstChanged;
     public event Action<float> OnHungerChanged;
+    public event Action OnHungry;
+    public event Action OnFull;
+    public event Action OnThirsty;
+    public event Action OnHydrated;
+
+    private bool thirstyTriggered = false;
+    private bool hydratedTriggered = false;
+
+    private bool hungryTriggered = false;
+    private bool fullTriggered = false;
+
 
     public void Initialize(VillagerNeeds needs)
     {
@@ -23,20 +34,56 @@ public class VillagerNeedsController : MonoBehaviour
         while(true)
         {
             if (Needs.isInWater)
-                Needs.thirst += Needs.thirstDrainRate; // or a fill rate
+            {
+                if (!hydratedTriggered)
+                {
+                    hydratedTriggered = true;
+                    Needs.thirst = 1.0f; // Have this water deducted from the recourse building.
+                    OnHydrated?.Invoke();  
+                }
+            }
             else
+            {
                 Needs.thirst -= Needs.thirstDrainRate;
+                hydratedTriggered = false;
+            }
 
-            OnThirstChanged?.Invoke(Needs.thirst);
+                OnThirstChanged?.Invoke(Needs.thirst);
+
+            
+
+            if (Needs.thirst < Needs.thirstThreshold)
+            {
+                if (!thirstyTriggered)
+                {
+                    thirstyTriggered = true;
+                    HandleThirsty();
+                }
+            }
+            else
+            {
+                thirstyTriggered = false;
+            }
+            
+            
+
 
             Needs.hunger -= Needs.hungerDrainRate;
             OnHungerChanged?.Invoke(Needs.hunger);
 
-            if (Needs.thirst < Needs.thirstThreshold)
-               HandleThirsty();
-
             if (Needs.hunger < Needs.hungerThreshold)
-                HandleHunger();
+            {
+                if (!hungryTriggered)
+                {
+                    hungryTriggered = true;
+                    HandleHunger();
+                }
+            }
+            else
+            {
+                hungryTriggered = false;
+            }
+                
 
             yield return new WaitForSeconds(Needs.tickRate);
         }
@@ -44,12 +91,12 @@ public class VillagerNeedsController : MonoBehaviour
 
     private void HandleThirsty()
     {
-         Debug.Log("Damn I am Thirsty");
+        OnThirsty?.Invoke();
     }
 
     private void HandleHunger()
     {
-        Debug.Log("Shit I am Hungry");
+        OnHungry?.Invoke();
     }
 }
   
