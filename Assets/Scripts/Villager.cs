@@ -7,17 +7,23 @@ using UnityEngine.EventSystems;
     // Todo: Create and actual AI controller for the character and move the stuff out of VillagerNeedsController.
     // Todo: Create SO data objects that we can use to init the villager Data.
     // Todo: Reverse the "thirst" float in VillagerNeeds. Because a higher number should indicate more thirsty not less.
-
-
     // BUG: If the villager runs out of water while inside the collider they will bug out and just kinda be stuck there.
+
+    // AI
+    // Todo: Find the closest needed resource that has resources in it.
+    // Todo: Figure out how running low/ out of player needs will affect the player.
+    // Todo: Add resource limits to resource building.
+    // Todo: Add some sort of command list or something for villager jobs
+    // Todo: Lets get the villagers brining water from a lake to the buildings.
+    
 
 public class Villager : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private VillagerNeedsController needsController;
     [SerializeField] private VillagerFloatingUI floatingUI;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float yOffset;
 
+    public VillagerNeedsController needsController;
     public VillagerNeeds needs;
 
     private void Awake()

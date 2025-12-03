@@ -39,7 +39,9 @@ public class VillagerNeedsController : MonoBehaviour
                 {
                     hydratedTriggered = true;
 
-                    Needs.thirst = 1.0f; // Have this water deducted from the recourse building.
+                    //Needs.thirst = 1.0f; // Have this water deducted from the recourse building.
+
+                    // Todo: Add some sort of logic here in case they are not fully hydrated or something.
                     OnHydrated?.Invoke();  
                 }
             }
@@ -104,6 +106,12 @@ public class VillagerNeedsController : MonoBehaviour
     public void DrainWater()
     {
         Needs.thirst = 0.0f;
+        OnThirstChanged?.Invoke(Needs.thirst);
+    }
+
+    public void AddWater(float thirstFilled)
+    {
+        Mathf.Clamp(Needs.thirst += thirstFilled, 0.0f, 1.0f);
         OnThirstChanged?.Invoke(Needs.thirst);
     }
 }

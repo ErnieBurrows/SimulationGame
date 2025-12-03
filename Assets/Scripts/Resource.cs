@@ -10,16 +10,22 @@ public class Resource : MonoBehaviour
         
     }
 
-    public void RemoveResource()
+    public void RemoveResource(Villager villager, float amountToRemove)
     {
-        
+        if (currentAmount - amountToRemove >= 0)
+        {
+            villager.needsController.AddWater(amountToRemove);
+            currentAmount -= amountToRemove;
+        }
     }
 
     public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<Villager>().needs.isInWater = true;
+            Villager villager =  other.gameObject.GetComponent<Villager>();
+            villager.needs.isInWater = true;
+            RemoveResource(villager, 1.0f);
             Debug.Log("Player has collided with " + gameObject.name);
         }
     }
