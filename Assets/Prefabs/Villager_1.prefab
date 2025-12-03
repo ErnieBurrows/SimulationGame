@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 7818140486753175646}
   m_Layer: 0
   m_Name: Villager_1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -539,6 +539,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   yOffset: 0
+  needs:
+    thirst: 1
+    hunger: 1
+    thirstThreshold: 0.2
+    hungerThreshold: 0.1
+    isInWater: 0
+    isUIOpen: 0
+    tickRate: 0.1
+    thirstDrainRate: 0.005
+    hungerDrainRate: 0.001
 --- !u!114 &100469846582534433
 MonoBehaviour:
   m_ObjectHideFlags: 0
