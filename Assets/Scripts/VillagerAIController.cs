@@ -46,24 +46,24 @@ public class VillagerAIController : MonoBehaviour
 
     private void HandleOnThirsty()
     {
-        Debug.Log("Damn I am Thirsty");
+       
 
         agent.SetDestination(waterObjects.First().transform.position);
     }
 
     private void HandleOnHungry()
     {
-        Debug.Log("Shit I am Hungry");
+       
     }
 
     private void HandleOnFull()
     {
-        Debug.Log("Yummy I am now a full boy :)");
+       
     }
 
     private void HandleOnHydrated()
     {
-        Debug.Log("I am now Hydrated!");
+        
         agent.SetDestination(RandomNavmeshLocation(15.0f));
     }
 

@@ -15,6 +15,9 @@ using UnityEngine.EventSystems;
     // Todo: Add resource limits to resource building.
     // Todo: Add some sort of command list or something for villager jobs
     // Todo: Lets get the villagers brining water from a lake to the buildings.
+
+    //UI
+    // Todo: Create a script that makes in world UI look at the camera.
     
 
 public class Villager : MonoBehaviour, IPointerClickHandler

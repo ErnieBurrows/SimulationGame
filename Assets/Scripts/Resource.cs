@@ -1,13 +1,28 @@
+using System;
 using UnityEngine;
 
+public enum ResourceType
+{
+    Water,
+    Food,
+    Count
+}
 public class Resource : MonoBehaviour
 {
     public float maxAmount;
     public float currentAmount;
+    public ResourceType resourceType;
+
+    private ResourceFloatingUI floatingUI;
+
+    private void Awake()
+    {
+        floatingUI = GetComponentInChildren<ResourceFloatingUI>();
+    }
 
     public void AddResource()
     {
-        
+        //floatingUI.UpdateCurrentResourceAmount(currentAmount/maxAmount);
     }
 
     public void RemoveResource(Villager villager, float amountToRemove)
@@ -16,6 +31,7 @@ public class Resource : MonoBehaviour
         {
             villager.needsController.AddWater(amountToRemove);
             currentAmount -= amountToRemove;
+            floatingUI.UpdateCurrentResourceAmount(currentAmount/maxAmount);
         }
     }
 
@@ -26,7 +42,6 @@ public class Resource : MonoBehaviour
             Villager villager =  other.gameObject.GetComponent<Villager>();
             villager.needs.isInWater = true;
             RemoveResource(villager, 1.0f);
-            Debug.Log("Player has collided with " + gameObject.name);
         }
     }
 
@@ -35,7 +50,6 @@ public class Resource : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             other.gameObject.GetComponent<Villager>().needs.isInWater = false;
-            Debug.Log("Player has ended collision with " + gameObject.name);
         }
     }
 }
