@@ -7,6 +7,10 @@ public class VillagerAIController : MonoBehaviour
 {
     // Todo: Find the closest needed resource that has resources in it.
     // Todo: Figure out how running low/ out of player needs will affect the player.
+    // Todo: Add resource limits to resource building.
+    // Todo: Add some sort of command list or something for villager jobs
+    // Todo: Lets get the villagers brining water from a lake to the buildings.
+    
     [SerializeField] VillagerNeedsController needsController;
 
     private List<GameObject> waterObjects = new List<GameObject>();
@@ -44,9 +48,8 @@ public class VillagerAIController : MonoBehaviour
         }
 
         agent = GetComponent<NavMeshAgent>();
-
-        
     }
+
     private void HandleOnThirsty()
     {
         Debug.Log("Damn I am Thirsty");
@@ -59,7 +62,7 @@ public class VillagerAIController : MonoBehaviour
         Debug.Log("Shit I am Hungry");
     }
 
-      private void HandleOnFull()
+    private void HandleOnFull()
     {
         Debug.Log("Yummy I am now a full boy :)");
     }

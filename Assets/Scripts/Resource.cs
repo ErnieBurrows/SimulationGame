@@ -2,15 +2,34 @@ using UnityEngine;
 
 public class Resource : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public float maxAmount;
+    public float currentAmount;
+
+    public void AddResource()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void RemoveResource()
     {
         
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            other.gameObject.GetComponent<Villager>().needs.isInWater = true;
+            Debug.Log("Player has collided with " + gameObject.name);
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            other.gameObject.GetComponent<Villager>().needs.isInWater = false;
+            Debug.Log("Player has ended collision with " + gameObject.name);
+        }
     }
 }

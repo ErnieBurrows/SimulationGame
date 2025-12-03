@@ -14,7 +14,7 @@ public class Villager : MonoBehaviour, IPointerClickHandler
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float yOffset;
 
-    private VillagerNeeds needs;
+    public VillagerNeeds needs;
 
     private void Awake()
     {
@@ -23,22 +23,6 @@ public class Villager : MonoBehaviour, IPointerClickHandler
         needsController.Initialize(needs);
         
         floatingUI.Bind(needsController);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.gameObject.CompareTag("Water"))
-        {
-            needs.isInWater = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if(other.gameObject.CompareTag("Water"))
-        {
-            needs.isInWater = false;
-        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
