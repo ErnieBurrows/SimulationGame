@@ -15,6 +15,7 @@ using UnityEngine.EventSystems;
     // Todo: Add resource limits to resource building.
     // Todo: Add some sort of command list or something for villager jobs
     // Todo: Lets get the villagers brining water from a lake to the buildings.
+    // Todo: Add button that allows players to choose AI choice making i.e go to closest building, go to building with most resource etc.
 
     //UI
     // Todo: Create a script that makes in world UI look at the camera.

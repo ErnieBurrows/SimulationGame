@@ -6,7 +6,6 @@ using UnityEngine.AI;
 public class VillagerAIController : MonoBehaviour
 {
     [SerializeField] VillagerNeedsController needsController;
-
     private List<GameObject> waterObjects = new List<GameObject>();
 
     private NavMeshAgent agent;
@@ -46,9 +45,37 @@ public class VillagerAIController : MonoBehaviour
 
     private void HandleOnThirsty()
     {
-       
+        // Todo: Implement different type of decision making here.
 
-        agent.SetDestination(waterObjects.First().transform.position);
+        // Assign values based on both closeness as well as resource amount available
+        // Make sure the building has enough water to fill us.
+        // Else -> Lets try to go to the lake or something.
+
+        Resource desiredResource = waterObjects.First().GetComponent<Resource>();
+
+        Vector3 destination = waterObjects.First().transform.position;
+        float originalDistance = Vector3.Distance(transform.position, destination);
+
+        foreach (GameObject water in waterObjects)
+        {
+            Resource currentResource = water.GetComponent<Resource>();
+
+            float newDistance = Vector3.Distance(transform.position, water.transform.position);
+
+            // Does the selected resource have enough to satiate our character
+            if (currentResource.currentAmount > (needsController.Needs.maxThirst - needsController.Needs.thirst))
+            {
+                desiredResource = water.GetComponent<Resource>();
+            }
+
+            if (newDistance < originalDistance)
+            {
+                destination = water.transform.position;
+            }
+        }
+
+
+        agent.SetDestination(destination);
     }
 
     private void HandleOnHungry()

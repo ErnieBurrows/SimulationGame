@@ -12,7 +12,6 @@ public class Resource : MonoBehaviour
     public float maxAmount;
     public float currentAmount;
     public ResourceType resourceType;
-
     private ResourceFloatingUI floatingUI;
 
     private void Awake()
