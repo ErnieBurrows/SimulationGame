@@ -3,12 +3,20 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum WorkEthic
+{
+    Extreme,
+    Average,
+    Bad
+}
+
 public class VillagerAIController : MonoBehaviour
 {
     [SerializeField] VillagerNeedsController needsController;
     private List<GameObject> waterObjects = new List<GameObject>();
-
     private NavMeshAgent agent;
+
+    public WorkEthic workEthic = WorkEthic.Average;
 
 
     private void OnEnable()
