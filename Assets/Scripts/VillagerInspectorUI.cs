@@ -128,13 +128,23 @@ public class VillagerInspectorUI : MonoBehaviour
         switch (type)
         {
             case PanelType.Needs:
+                // Make the correct panel object active
                 needsPanel.SetActive(true);
                 behaviourPanel.SetActive(false);
+
+                // Toggle interactivity on the panel decider buttons
+                needsPanelButton.interactable = false;
+                behaviourPanelButton.interactable = true;
+
             break;
 
             case PanelType.Behaviour:
+
                 needsPanel.SetActive(false);
                 behaviourPanel.SetActive(true);
+
+                needsPanelButton.interactable = true;
+                behaviourPanelButton.interactable = false;
             break;
 
             case PanelType.Count:
