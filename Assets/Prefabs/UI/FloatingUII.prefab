@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1301260309442344230}
   - component: {fileID: 2904246037817035334}
   m_Layer: 5
-  m_Name: BASE_FloatingUI_Canvas
+  m_Name: FloatingUII
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

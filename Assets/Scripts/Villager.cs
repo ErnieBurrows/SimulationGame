@@ -27,14 +27,19 @@ public class Villager : MonoBehaviour, IPointerClickHandler
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float yOffset;
 
+    [SerializeField] private string villagerName = "Bob";
+
     public VillagerNeedsController needsController;
     public VillagerNeeds needs;
+    public VillagerData data;
 
     private void Awake()
     {
         needs = new VillagerNeeds();
 
-        needsController.Initialize(needs);
+        data = new VillagerData(villagerName);
+
+        needsController.Initialize(needs, data);
         
         floatingUI.Bind(needsController);
     }

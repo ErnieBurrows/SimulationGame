@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class VillagerNeedsController : MonoBehaviour
 {
     public VillagerNeeds Needs { get; private set; }
+    public VillagerData Data {get; private set;}
     public event Action<float> OnThirstChanged;
     public event Action<float> OnHungerChanged;
     public event Action OnHungry;
@@ -22,9 +23,10 @@ public class VillagerNeedsController : MonoBehaviour
     private bool fullTriggered = false;
 
 
-    public void Initialize(VillagerNeeds needs)
+    public void Initialize(VillagerNeeds needs, VillagerData data)
     {
         Needs = needs;
+        Data = data;
 
         StartCoroutine(SimulateNeeds());
     }

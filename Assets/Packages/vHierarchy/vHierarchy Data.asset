@@ -18,6 +18,7 @@ MonoBehaviour:
     - 6131ecf0053beb34ebb7c1aa846ea264
     - 7266b02ecb233e248b906c4b2b1c80e4
     - 67692fa1d88ecbe40900934dbb6c9e5f
+    - 48600b90b9a7287449ba23df4c9b27d1
     values:
     - goDatas_byGlobalId:
         keys:
@@ -104,6 +105,19 @@ MonoBehaviour:
           isColorRecursive: 0
         - colorIndex: 0
           iconNameOrGuid: RawImage Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-1-48600b90b9a7287449ba23df4c9b27d1-3633983450040972192-0
+        - globalObjectIdString: GlobalObjectId_V1-1-48600b90b9a7287449ba23df4c9b27d1-4203700155196159470-0
+        values:
+        - colorIndex: 0
+          iconNameOrGuid: Button Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: Button Icon
           isIconRecursive: 0
           isColorRecursive: 0
   bookmarks: []
