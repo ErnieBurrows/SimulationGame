@@ -101,7 +101,8 @@ public class VillagerInspectorUI : MonoBehaviour
         hungerBar.fillAmount = value;
     } 
 
-    private void ChangePanel(PanelType type)
+    // Note: This is called by the custom inspector class, and is callable within edit mode.
+    public void ChangePanel(PanelType type)
     {
         switch (type)
         {
