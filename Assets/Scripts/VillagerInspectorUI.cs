@@ -1,5 +1,5 @@
 using TMPro;
-using Unity.VisualScripting;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +12,11 @@ public enum PanelType
 
 public class VillagerInspectorUI : MonoBehaviour
 {
+    [Header("LeanTween Settings")]
+    public float UIAnimationDuration = 0.25f;
+    public LeanTweenType type;
+    private Vector3 startPosition;
+
     // Panel Selection
     [Header("Panel Selection References")]
     [SerializeField] private GameObject needsPanel;
@@ -77,6 +82,12 @@ public class VillagerInspectorUI : MonoBehaviour
 
         panel.SetActive(true);
 
+        startPosition = panel.transform.position;
+
+        LeanTween.moveY(panel, Screen.height / 2.0f, UIAnimationDuration)
+            .setEaseOutBack()
+            .setOvershoot(1);
+
         ChangePanel(PanelType.Needs);
     }
 
@@ -89,7 +100,17 @@ public class VillagerInspectorUI : MonoBehaviour
         }
 
         current = null;
-        panel.SetActive(false);
+        
+
+        LeanTween.moveY(panel, startPosition.y, UIAnimationDuration)
+            .setEaseOutBack()
+            .setOvershoot(1)
+            .setOnComplete(() => 
+            {
+                panel.SetActive(false);
+            });
+            
+        //panel.transform.position = startPosition;
     }
 
     private void UpdateThirst(float value) 
