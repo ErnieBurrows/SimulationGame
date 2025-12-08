@@ -21,7 +21,7 @@ using UnityEngine.EventSystems;
     // Todo: Create a script that makes in world UI look at the camera.
     
 
-public class Villager : MonoBehaviour, IPointerClickHandler
+public class Villager : MonoBehaviour, IPointerClickHandler, ISimulatable
 {
     [SerializeField] private VillagerFloatingUI floatingUI;
     [SerializeField] private LayerMask layerMask;
@@ -47,5 +47,10 @@ public class Villager : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         VillagerSelectionManager.Instance.Select(needsController);
-    }  
+    }
+
+    public void Simulate()
+    {
+        Debug.Log("Simulating " + villagerName);
+    }
 }
