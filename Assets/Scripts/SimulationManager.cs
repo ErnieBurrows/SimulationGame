@@ -1,123 +1,117 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public enum SimulationSpeed
 {
     Paused,
-    Normal,
-    Fast,
-    Fastest
+    Normal,   // 1x
+    Fast,     // 2x
+    Fastest   // 4x
 }
+
 public class SimulationManager : MonoBehaviour
 {
-    
     #region Singleton
-     private static SimulationManager _instance;
+    private static SimulationManager _instance;
     private static bool _applicationIsQuitting = false;
-
     public static SimulationManager Instance
     {
         get
         {
-            if (_applicationIsQuitting)
-            {
-                Debug.LogWarning("[Singleton] Instance '" + typeof(SimulationManager) +
-                                 "' already destroyed on application quit. Won't create again - returning null.");
-                return null;
-            }
-
-            if (_instance == null)
-            {
-                _instance = FindFirstObjectByType<SimulationManager>();
-
-                if (_instance == null)
-                {
-                    GameObject singletonObject = new GameObject();
-                    _instance = singletonObject.AddComponent<SimulationManager>();
-                    singletonObject.name = "(Singleton) " + typeof(SimulationManager).ToString();
-                    DontDestroyOnLoad(singletonObject);
-                }
-            }
+            if (_applicationIsQuitting) return null;
+            if (_instance == null) _instance = FindFirstObjectByType<SimulationManager>();
             return _instance;
         }
     }
 
-     private void Awake()
+    private void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (_instance != this)
-        {
-            Destroy(gameObject);
-        }
+        if (_instance == null) { _instance = this; DontDestroyOnLoad(gameObject); }
+        else if (_instance != this) Destroy(gameObject);
     }
 
-    private void OnDestroy()
-    {
-        if (_instance == this)
-        {
-            _applicationIsQuitting = true;
-        }
-    }
-
+    private void OnDestroy() { if (_instance == this) _applicationIsQuitting = true; }
     #endregion
-    
-    // Todo: Gather all items that have ISimulatable and add them to this list at Start.
-    [SerializeField] private List<GameObject> simulatable;
 
-    [Tooltip("This will be divided to get a faster tickrate. To make the entire system faster decrease this.")]
-    [SerializeField] private float tickRateMultiplier = 1;
-    private float tickRate;
+    private HashSet<ISimulatable> simulatables = new HashSet<ISimulatable>();
 
-    [HideInInspector]
-    public SimulationSpeed simulationSpeed = SimulationSpeed.Normal;
+    [SerializeField] private float baseTickSeconds = 0.2f; // Base real seconds per simulation tick at Normal
+    [HideInInspector] public SimulationSpeed simulationSpeed = SimulationSpeed.Normal;
 
-    private void Start()
+    private IEnumerator Start()
     {
-        GetTickRate();
+        yield return null; // wait one frame
+        
+        // Auto-register existing objects with ISimulatable
+        foreach (MonoBehaviour monoBehaviour in FindObjectsByType<MonoBehaviour>(sortMode: FindObjectsSortMode.None))
+        {
+            if (monoBehaviour is ISimulatable simulatable) 
+                Register(simulatable);
+        }
 
-        StartCoroutine(SimulateALL());
+        StartCoroutine(SimulateLoop());
     }
 
-    private void GetTickRate()
+    // Register/unregister so runtime-instantiated objects can join
+    public void Register(ISimulatable simulatable) 
+    { 
+        if (simulatable != null) 
+        simulatables.Add(simulatable); 
+    }
+    public void Unregister(ISimulatable simulatable) 
+    { 
+        if (simulatable != null) 
+        simulatables.Remove(simulatable); 
+    }
+
+    public float GetSimulationDelta()
     {
-        // Avoid dividing by 0 if the simulation is paused.
-        if (simulationSpeed != SimulationSpeed.Paused)
+        if (simulationSpeed == SimulationSpeed.Paused) 
+            return 0f;
+
+        switch (simulationSpeed)
         {
-            tickRate = tickRateMultiplier / (int)simulationSpeed;
+            case SimulationSpeed.Fast: 
+                return baseTickSeconds / 2f;
+
+            case SimulationSpeed.Fastest: 
+                return baseTickSeconds / 4f;
+
+            case SimulationSpeed.Normal:
+                default: return baseTickSeconds;
         }
     }
 
-    private IEnumerator SimulateALL()
+    private IEnumerator SimulateLoop()
     {
-        while(true)
+        while (true)
         {
             if (simulationSpeed == SimulationSpeed.Paused)
             {
                 yield return null;
-                continue;     
+                continue;
             }
 
-            foreach(GameObject go in simulatable)
+            float delta = GetSimulationDelta();
+
+            // Snapshot to avoid modification during iteration
+            List<ISimulatable> snapshot = new List<ISimulatable>(simulatables);
+            for (int i = 0; i < snapshot.Count; i++)
             {
-                go.GetComponent<ISimulatable>()?.Simulate();
+                try { snapshot[i].Simulate(delta); }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Simulate exception on {snapshot[i]}: {ex}");
+                }
             }
 
-            yield return new WaitForSeconds(tickRate);
+            yield return new WaitForSeconds(delta);
         }
     }
 
-    public void ChangeSimulationSpeed(SimulationSpeed newSpeed)
+    public void SetSimulationSpeed(SimulationSpeed newSpeed)
     {
         simulationSpeed = newSpeed;
-
-        GetTickRate();
     }
-
-
 }

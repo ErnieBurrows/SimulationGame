@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,41 +7,58 @@ using UnityEngine.UI;
 public class TimeScaleButton : MonoBehaviour
 {
     [SerializeField] private SimulationSpeed simulationSpeed;
-    private List<Button> siblingButtons = new List<Button>();
-    private Button button;
 
+    private Button button;
+    private List<TimeScaleButton> siblingButtons;
 
     private void Awake()
     {
         button = GetComponent<Button>();
 
-        siblingButtons = transform.parent.GetComponentsInChildren<Button>().ToList<Button>();
-    }
-
-    private void ToggleSiblingInteractivity()
-    {
-        foreach (Button button in siblingButtons)
-        {
-            if (button != this.button)
-                button.interactable = true;
-            else
-                button.interactable = false;
-        }
+        // Get sibling TimeScaleButtons only
+        siblingButtons = transform.parent
+            .GetComponentsInChildren<TimeScaleButton>(includeInactive: true)
+            .Where(tsb => tsb != this)
+            .ToList();
     }
 
     private void OnEnable()
     {
-        button.onClick.AddListener(() => 
-        {
-            SimulationManager.Instance.ChangeSimulationSpeed(simulationSpeed);
-            ToggleSiblingInteractivity();
-        });
+        button.onClick.AddListener(OnClicked);
+
+        // Sync UI when enabled
+        RefreshState(SimulationManager.Instance.simulationSpeed);
     }
 
     private void OnDisable()
     {
-        button.onClick.RemoveAllListeners();
+        button.onClick.RemoveListener(OnClicked);
     }
 
+    private void OnClicked()
+    {
+        // Set simulation speed
+        SimulationManager.Instance.SetSimulationSpeed(simulationSpeed);
 
+        // Update UI for ALL buttons
+        RefreshGroup();
+    }
+
+    // Refreshes this button based on sim speed
+    private void RefreshState(SimulationSpeed current)
+    {
+        bool isSelected = (current == simulationSpeed);
+        button.interactable = !isSelected;
+    }
+
+    // Updates this and siblings
+    private void RefreshGroup()
+    {
+        RefreshState(SimulationManager.Instance.simulationSpeed);
+
+        foreach (var sibling in siblingButtons)
+        {
+            sibling.RefreshState(SimulationManager.Instance.simulationSpeed);
+        }
+    }
 }

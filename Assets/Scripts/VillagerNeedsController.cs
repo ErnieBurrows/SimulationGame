@@ -1,14 +1,14 @@
 using System;
-using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class VillagerNeedsController : MonoBehaviour
+public class VillagerNeedsController : MonoBehaviour, ISimulatable
 {
     public VillagerNeeds Needs { get; private set; }
-    public VillagerData Data {get; private set;}
+    public VillagerEnvironment Environment {get; private set;}
+    public VillagerData Data { get; private set; }
+    [SerializeField] private VillagerNeedsConfig Config;
+
+
     public event Action<float> OnThirstChanged;
     public event Action<float> OnHungerChanged;
     public event Action OnHungry;
@@ -18,103 +18,113 @@ public class VillagerNeedsController : MonoBehaviour
 
     private bool thirstyTriggered = false;
     private bool hydratedTriggered = false;
-
     private bool hungryTriggered = false;
     private bool fullTriggered = false;
 
 
-    public void Initialize(VillagerNeeds needs, VillagerData data)
+    private void Awake()
+    {
+        // Create the needs immediately so simulation never starts without them.
+        Needs = new VillagerNeeds();
+
+        // Use placeholder villager name if Data isn't set yet
+        Data = new VillagerData("Unnamed");
+
+        // Grab environment 
+        Environment = GetComponent<VillagerEnvironment>();
+
+        if (Environment == null)
+            Debug.LogError($"{name} has no VillagerEnvironment component!");
+
+        }
+        public void Initialize(VillagerNeeds needs, VillagerData data)
     {
         Needs = needs;
         Data = data;
-
-        StartCoroutine(SimulateNeeds());
     }
 
-    private IEnumerator SimulateNeeds()
+    // ISimulatable
+    public void Simulate(float deltaTime)
     {
-        while(true)
+        SimulateNeeds(deltaTime);
+    }
+
+    public void SimulateNeeds(float dt)
+    {
+        if (Needs == null) return;
+
+        // --- DRINKING LOGIC ---
+        if (Environment.IsInWater && Environment.CurrentWaterSource != null)
         {
-            if (Needs.isInWater)
+            float need = Needs.maxThirst - Needs.thirst;
+            if (need > 0)
             {
+                // Withdraw from resource
+                float drank = Environment.CurrentWaterSource.Withdraw(need);
+
+                // Apply water to needs
+                AddWater(drank);
+
                 if (!hydratedTriggered)
                 {
                     hydratedTriggered = true;
-
-                    //Needs.thirst = 1.0f; // Have this water deducted from the recourse building.
-
-                    // Todo: Add some sort of logic here in case they are not fully hydrated or something.
-                    OnHydrated?.Invoke();  
+                    OnHydrated?.Invoke();
                 }
             }
-            else
-            {
-                Needs.thirst -= Needs.thirstDrainRate;
-                hydratedTriggered = false;
-            }
-
-                OnThirstChanged?.Invoke(Needs.thirst);
-
-            
-
-            if (Needs.thirst < Needs.thirstThreshold)
-            {
-                if (!thirstyTriggered)
-                {
-                    thirstyTriggered = true;
-                    HandleThirsty();
-                }
-            }
-            else
-            {
-                thirstyTriggered = false;
-            }
-            
-            
-
-
-            Needs.hunger -= Needs.hungerDrainRate;
-            OnHungerChanged?.Invoke(Needs.hunger);
-
-            if (Needs.hunger < Needs.hungerThreshold)
-            {
-                if (!hungryTriggered)
-                {
-                    hungryTriggered = true;
-                    HandleHunger();
-                }
-            }
-            else
-            {
-                hungryTriggered = false;
-            }
-                
-
-            yield return new WaitForSeconds(Needs.tickRate);
         }
+        else
+        {
+            hydratedTriggered = false;
+            Needs.thirst -= Config.thirstDrainRate * dt;
+            Needs.thirst = Mathf.Clamp01(Needs.thirst);
+        }
+
+        OnThirstChanged?.Invoke(Needs.thirst);
+
+        if (Needs.thirst < Needs.thirstThreshold && !thirstyTriggered)
+        {
+            thirstyTriggered = true;
+            OnThirsty?.Invoke();
+        }
+        else if (Needs.thirst >= Needs.thirstThreshold)
+        {
+            thirstyTriggered = false;
+        }
+
+        // --- HUNGER logic stays unchanged ---
+        Needs.hunger -= Config.hungerDrainRate * dt;
+        Needs.hunger = Mathf.Clamp01(Needs.hunger);
+        OnHungerChanged?.Invoke(Needs.hunger);
     }
 
-    private void HandleThirsty()
-    {
-        OnThirsty?.Invoke();
-    }
 
-    private void HandleHunger()
-    {
-        OnHungry?.Invoke();
-    }
-
+    private void HandleThirsty() => OnThirsty?.Invoke();
+    private void HandleHunger() => OnHungry?.Invoke();
 
     public void DrainWater()
     {
+        // 0.0f = not thirsty / full
         Needs.thirst = 0.0f;
         OnThirstChanged?.Invoke(Needs.thirst);
     }
 
     public void AddWater(float thirstFilled)
     {
-        Mathf.Clamp(Needs.thirst += thirstFilled, 0.0f, 1.0f);
+        // capture clamped value
+        Needs.thirst = Mathf.Clamp01(Needs.thirst + thirstFilled);
         OnThirstChanged?.Invoke(Needs.thirst);
     }
+
+    private void OnEnable()
+    {
+        // auto-register with SimulationManager
+        if (SimulationManager.Instance != null) 
+            SimulationManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        if (SimulationManager.Instance != null) 
+            SimulationManager.Instance.Unregister(this);
+    }
 }
-  

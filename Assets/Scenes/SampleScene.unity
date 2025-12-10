@@ -1003,10 +1003,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b2aaaee56eab1048a83ee6b6ab0f9cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimulationManager
-  simulatable:
-  - {fileID: 1435432733}
-  - {fileID: 302932266}
-  tickRateMultiplier: 1
+  baseTickSeconds: 0.2
   simulationSpeed: 1
 --- !u!1 &832575517
 GameObject:

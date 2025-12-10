@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,109 +9,173 @@ public enum WorkEthic
     Bad
 }
 
-public class VillagerAIController : MonoBehaviour
+public class VillagerAIController : MonoBehaviour, ISimulatable
 {
-    [SerializeField] VillagerNeedsController needsController;
-    private List<GameObject> waterObjects = new List<GameObject>();
+    [SerializeField] private VillagerNeedsController needsController;
+
+    private readonly List<Resource> waterSources = new List<Resource>();
     private NavMeshAgent agent;
 
-    public WorkEthic workEthic = WorkEthic.Average;
-
+    private Resource currentTarget = null;
+    private bool isGoingToWater = false;
 
     private void OnEnable()
     {
-        if(needsController != null)
+        if (needsController != null)
         {
             needsController.OnHungry += HandleOnHungry;
             needsController.OnThirsty += HandleOnThirsty;
             needsController.OnHydrated += HandleOnHydrated;
             needsController.OnFull += HandleOnFull;
         }
+
+        SimulationManager.Instance?.Register(this);
     }
 
     private void OnDisable()
     {
-        if(needsController != null)
+        if (needsController != null)
         {
             needsController.OnHungry -= HandleOnHungry;
             needsController.OnThirsty -= HandleOnThirsty;
             needsController.OnHydrated -= HandleOnHydrated;
             needsController.OnFull -= HandleOnFull;
         }
+
+        SimulationManager.Instance?.Unregister(this);
     }
 
     private void Start()
     {
-        foreach(Resource resource in FindObjectsByType<Resource>(FindObjectsSortMode.None))
+        foreach (var res in FindObjectsByType<Resource>(FindObjectsSortMode.None))
         {
-            waterObjects.Add(resource.gameObject);
+            waterSources.Add(res);
         }
 
         agent = GetComponent<NavMeshAgent>();
     }
 
-    private void HandleOnThirsty()
+    public void Simulate(float dt)
     {
-        // Todo: Implement different type of decision making here.
+        HandleWaterArrival();
+    }
 
-        // Assign values based on both closeness as well as resource amount available
-        // Make sure the building has enough water to fill us.
-        // Else -> Lets try to go to the lake or something.
+    private void HandleOnThirsty() 
+    { 
+        ChooseBestWaterSource(); 
+    }
 
-        Resource desiredResource = waterObjects.First().GetComponent<Resource>();
+    private void HandleOnHungry() { }
+    private void HandleOnFull() { }
+    private void HandleOnHydrated() { WanderRandomly(); }
 
-        Vector3 destination = waterObjects.First().transform.position;
-        float originalDistance = Vector3.Distance(transform.position, destination);
+    private void ChooseBestWaterSource()
+    {
+        if (agent == null || waterSources.Count == 0)
+            return;
 
-        foreach (GameObject water in waterObjects)
+        Resource best = null;
+        float bestScore = float.MinValue;
+
+        float need = needsController.Needs.maxThirst - needsController.Needs.thirst;
+
+        foreach (var res in waterSources)
         {
-            Resource currentResource = water.GetComponent<Resource>();
+            if (res == null || res.currentAmount <= 0) continue;
 
-            float newDistance = Vector3.Distance(transform.position, water.transform.position);
+            float dist = Vector3.Distance(transform.position, res.transform.position);
+            float score = res.currentAmount - dist * 0.1f;
 
-            // Does the selected resource have enough to satiate our character
-            if (currentResource.currentAmount > (needsController.Needs.maxThirst - needsController.Needs.thirst))
+            if (score > bestScore)
             {
-                desiredResource = water.GetComponent<Resource>();
-            }
-
-            if (newDistance < originalDistance)
-            {
-                destination = water.transform.position;
+                bestScore = score;
+                best = res;
             }
         }
 
+        if (best != null)
+        {
+            agent.SetDestination(best.transform.position);
+        }
+    }
 
+
+    private void HandleWaterArrival()
+    {
+        if (!isGoingToWater || currentTarget == null)
+            return;
+
+        // Wait until navmesh reaches the target
+        if (agent.pathPending) return;
+
+        if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            // DRINKING HAPPENS HERE
+            DrinkFromResource();
+
+            // Reset state
+            isGoingToWater = false;
+            currentTarget = null;
+
+            // Wander afterward
+            WanderRandomly();
+        }
+    }
+
+    private void DrinkFromResource()
+    {
+        float maxDrink = needsController.Needs.maxThirst - needsController.Needs.thirst;
+        if (maxDrink <= 0) return;
+
+        float amount = currentTarget.Withdraw(maxDrink);
+        needsController.AddWater(amount); // THIS TRIGGERS UI UPDATE!
+    }
+
+    private void WanderRandomly()
+    {
+        if (agent == null) return;
+
+        Vector3 destination;
+
+        // Try up to N times to find a non-water location
+        for (int i = 0; i < 10; i++)
+        {
+            destination = RandomNavmeshLocation(15f);
+
+            if (!IsPointInWater(destination))
+            {
+                agent.SetDestination(destination);
+                return;
+            }
+        }
+
+        // Fallback: last resort, just move a little bit away from current position
+        destination = transform.position + (transform.forward * 3f);
         agent.SetDestination(destination);
     }
 
-    private void HandleOnHungry()
-    {
-       
-    }
 
-    private void HandleOnFull()
+    private Vector3 RandomNavmeshLocation(float radius)
     {
-       
-    }
-
-    private void HandleOnHydrated()
-    {
-        
-        agent.SetDestination(RandomNavmeshLocation(15.0f));
-    }
-
-    public Vector3 RandomNavmeshLocation(float radius) 
-    {
-        Vector3 randomPosition = Random.insideUnitSphere * radius;
-        randomPosition += transform.position;
+        Vector3 randomPos = Random.insideUnitSphere * radius + transform.position;
         NavMeshHit hit;
-        Vector3 finalPosition = Vector3.zero;
-
-        if (NavMesh.SamplePosition(randomPosition, out hit, radius, 1)) 
-            finalPosition = hit.position;            
-        
-        return finalPosition;
+        if (NavMesh.SamplePosition(randomPos, out hit, radius, NavMesh.AllAreas))
+            return hit.position;
+        return transform.position;
     }
-   
+
+
+    // HELPER SCRIPTS
+   private bool IsPointInWater(Vector3 point)
+    {
+        Collider[] hits = Physics.OverlapSphere(point, 0.25f);
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Water"))
+                return true;
+        }
+
+        return false;
+    }
+
 }

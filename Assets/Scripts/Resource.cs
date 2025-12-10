@@ -1,54 +1,43 @@
-using System;
 using UnityEngine;
 
 public enum ResourceType
 {
     Water,
-    Food,
-    Count
+    Food
 }
+
 public class Resource : MonoBehaviour
 {
-    public float maxAmount;
-    public float currentAmount;
+    public float maxAmount = 10f;
+    public float currentAmount = 10f;
     public ResourceType resourceType;
+
     private ResourceFloatingUI floatingUI;
 
     private void Awake()
     {
         floatingUI = GetComponentInChildren<ResourceFloatingUI>();
+        UpdateUI();
     }
 
-    public void AddResource()
+    public float Withdraw(float amount)
     {
-        //floatingUI.UpdateCurrentResourceAmount(currentAmount/maxAmount);
+        float taken = Mathf.Min(currentAmount, amount);
+        currentAmount -= taken;
+
+        UpdateUI();
+        return taken;
     }
 
-    public void RemoveResource(Villager villager, float amountToRemove)
+    public void Add(float amount)
     {
-        if (currentAmount - amountToRemove >= 0)
-        {
-            villager.needsController.AddWater(amountToRemove);
-            currentAmount -= amountToRemove;
-            floatingUI.UpdateCurrentResourceAmount(currentAmount/maxAmount);
-        }
+        currentAmount = Mathf.Clamp(currentAmount + amount, 0, maxAmount);
+        UpdateUI();
     }
 
-    public void OnTriggerEnter(Collider other)
+    private void UpdateUI()
     {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            Villager villager =  other.gameObject.GetComponent<Villager>();
-            villager.needs.isInWater = true;
-            RemoveResource(villager, 1.0f);
-        }
-    }
-
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            other.gameObject.GetComponent<Villager>().needs.isInWater = false;
-        }
+        if (floatingUI != null)
+            floatingUI.UpdateCurrentResourceAmount(currentAmount / maxAmount);
     }
 }

@@ -2,5 +2,6 @@ using UnityEngine;
 
 public interface ISimulatable 
 {
-    void Simulate();
+     // Called once per simulation tick. deltaTime is the simulation time step.
+    void Simulate(float deltaTime);
 }
