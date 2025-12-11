@@ -50,16 +50,16 @@ public class VillagerNeedsController : SimulatableBehaviour
         if (Needs == null) return;
 
         // --- DRINKING LOGIC ---
-        if (Environment.IsInWater && Environment.CurrentWaterSource != null)
+        if (Environment.IsInWater && Environment.currentResource != null)
         {
             float need = Needs.maxThirst - Needs.thirst;
             if (need > 0)
             {
                 // Withdraw from resource
-                float drank = Environment.CurrentWaterSource.Withdraw(need);
+                float consumed = Environment.currentResource.Withdraw(need);
 
                 // Apply water to needs
-                AddWater(drank);
+                AddWater(consumed);
 
                 if (!hydratedTriggered)
                 {
@@ -75,8 +75,36 @@ public class VillagerNeedsController : SimulatableBehaviour
             Needs.thirst = Mathf.Clamp01(Needs.thirst);
         }
 
-        OnThirstChanged?.Invoke(Needs.thirst);
+        if (Environment.IsInFood && Environment.currentResource != null)
+        {
+            float need = Needs.maxHunger - Needs.hunger;
+            if (need > 0)
+            {
+                float consumed = Environment.currentResource.Withdraw(need);
 
+                AddFood(consumed);
+
+                if (!fullTriggered)
+                {
+                    fullTriggered = true;
+                    OnFull?.Invoke();
+                }
+            }
+        }
+        else
+        {
+            fullTriggered = false;
+            Needs.hunger -= Config.hungerDrainRate * dt;
+            Needs.hunger = Mathf.Clamp01(Needs.hunger);
+        }
+
+
+        // Needs changed Actions
+        OnThirstChanged?.Invoke(Needs.thirst);
+        OnHungerChanged?.Invoke(Needs.hunger);
+
+
+        // OnHungry and OnThirst Actions
         if (Needs.thirst < Needs.thirstThreshold && !thirstyTriggered)
         {
             thirstyTriggered = true;
@@ -87,10 +115,16 @@ public class VillagerNeedsController : SimulatableBehaviour
             thirstyTriggered = false;
         }
 
-        // --- HUNGER logic stays unchanged ---
-        Needs.hunger -= Config.hungerDrainRate * dt;
-        Needs.hunger = Mathf.Clamp01(Needs.hunger);
-        OnHungerChanged?.Invoke(Needs.hunger);
+        if(Needs.hunger < Needs.hungerThreshold && !hungryTriggered)
+        {
+            hungryTriggered = true;
+            OnHungry?.Invoke();
+        }
+        else if (Needs.thirst >= Needs.thirstThreshold)
+        {
+            hungryTriggered = false;
+        }
+        
     }
 
 
@@ -104,14 +138,25 @@ public class VillagerNeedsController : SimulatableBehaviour
         OnThirstChanged?.Invoke(Needs.thirst);
     }
 
+    public void DrainFood()
+    {
+        Needs.hunger = 0.0f;
+        OnHungerChanged?.Invoke(Needs.hunger);
+    }
+
     public void AddWater(float thirstFilled)
     {
-        // capture clamped value
         Needs.thirst = Mathf.Clamp01(Needs.thirst + thirstFilled);
         OnThirstChanged?.Invoke(Needs.thirst);
     }
 
-   public override void Simulate(float deltaTime)
+    public void AddFood(float hungerFilled)
+    {
+        Needs.hunger = Mathf.Clamp01(Needs.hunger + hungerFilled);
+        OnHungerChanged?.Invoke(Needs.hunger);
+    }
+
+    public override void Simulate(float deltaTime)
     {
         SimulateNeeds(deltaTime);
     }

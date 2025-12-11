@@ -68,9 +68,18 @@ public class VillagerAIController : SimulatableBehaviour
         ChooseBestWaterSource(); 
     }
 
-    private void HandleOnHungry() { }
-    private void HandleOnFull() { }
-    private void HandleOnHydrated() { WanderRandomly(); }
+    private void HandleOnHungry()
+    {
+        ChooseBestWaterSource();
+    }
+    private void HandleOnFull()
+    {
+        WanderRandomly(); 
+    }
+    private void HandleOnHydrated() 
+    {
+        WanderRandomly(); 
+    }
 
     private void ChooseBestWaterSource()
     {

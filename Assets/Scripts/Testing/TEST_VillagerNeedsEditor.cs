@@ -15,6 +15,11 @@ public class TEST_VillagerNeedsEditor : Editor
             needsTesting.DrainVillagersWater();
         }
 
+        if (GUILayout.Button("Drain Villagers Food"))
+        {
+            needsTesting.DrainVillagersFood();
+        }
+
 
     }
 }

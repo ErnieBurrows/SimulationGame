@@ -11,4 +11,12 @@ public class TEST_VillagerNeeds : MonoBehaviour
             villager.GetComponent<VillagerNeedsController>().DrainWater();
         }
     }
+
+    public void DrainVillagersFood()
+    {
+        foreach (GameObject villager in villagers)
+        {
+            villager.GetComponent<VillagerNeedsController>().DrainFood();
+        }
+    }
 }
