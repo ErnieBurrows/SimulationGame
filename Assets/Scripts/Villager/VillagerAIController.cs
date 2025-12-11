@@ -13,6 +13,7 @@ public enum WorkEthic
 public class VillagerAIController : SimulatableBehaviour
 {
     private readonly List<Resource> waterSources = new List<Resource>();
+    private readonly List<Resource> foodSources = new List<Resource>();
     private Resource currentTarget = null;
     private bool isGoingToWater = false;
 
@@ -52,9 +53,12 @@ public class VillagerAIController : SimulatableBehaviour
 
     private void Start()
     {
-        foreach (var res in FindObjectsByType<Resource>(FindObjectsSortMode.None))
+        foreach (Resource resource in FindObjectsByType<Resource>(FindObjectsSortMode.None))
         {
-            waterSources.Add(res);
+            if (resource.resourceType == ResourceType.Water)
+                waterSources.Add(resource);
+            if (resource.resourceType == ResourceType.Food)
+                foodSources.Add(resource);
         }        
     }
 
@@ -65,12 +69,12 @@ public class VillagerAIController : SimulatableBehaviour
 
     private void HandleOnThirsty() 
     { 
-        ChooseBestWaterSource(); 
+        ChooseBestResource(ResourceType.Water); 
     }
 
     private void HandleOnHungry()
     {
-        ChooseBestWaterSource();
+        ChooseBestResource(ResourceType.Food);
     }
     private void HandleOnFull()
     {
@@ -81,27 +85,40 @@ public class VillagerAIController : SimulatableBehaviour
         WanderRandomly(); 
     }
 
-    private void ChooseBestWaterSource()
+    private void ChooseBestResource(ResourceType type)
     {
-        if (agent == null || waterSources.Count == 0)
-            return;
+        if (agent == null) return; 
+
+        if (type == ResourceType.Water && waterSources.Count == 0) return;
+        if (type == ResourceType.Food && foodSources.Count == 0) return; 
 
         Resource best = null;
+        List<Resource> resourceList = new List<Resource>(); 
         float bestScore = float.MinValue;
+        float need;
 
-        float need = needsController.Needs.maxThirst - needsController.Needs.thirst;
-
-        foreach (var res in waterSources)
+        if (type == ResourceType.Water)
         {
-            if (res == null || res.currentAmount <= 0) continue;
+            need = needsController.Needs.maxThirst - needsController.Needs.thirst;
+            resourceList = waterSources;
+        }
+        if (type == ResourceType.Food)
+        {
+            need = needsController.Needs.maxHunger - needsController.Needs.hunger;
+            resourceList = foodSources;
+        }
 
-            float dist = Vector3.Distance(transform.position, res.transform.position);
-            float score = res.currentAmount - dist * 0.1f;
+        foreach (Resource resource in resourceList)
+        {
+            if (resource == null || resource.currentAmount <= 0) continue;
+
+            float dist = Vector3.Distance(transform.position, resource.transform.position);
+            float score = resource.currentAmount - dist * 0.1f;
 
             if (score > bestScore)
             {
                 bestScore = score;
-                best = res;
+                best = resource;
             }
         }
 
