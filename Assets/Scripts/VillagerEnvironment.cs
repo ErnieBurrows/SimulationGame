@@ -7,18 +7,18 @@ public class VillagerEnvironment : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Resource res = other.GetComponent<Resource>();
-        if (res != null && res.resourceType == ResourceType.Water)
+        Resource resource = other.GetComponent<Resource>();
+        if (resource != null && resource.resourceType == ResourceType.Water)
         {
             IsInWater = true;
-            CurrentWaterSource = res;
+            CurrentWaterSource = resource;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Resource res = other.GetComponent<Resource>();
-        if (res != null && res == CurrentWaterSource)
+        Resource resource = other.GetComponent<Resource>();
+        if (resource != null && resource == CurrentWaterSource)
         {
             IsInWater = false;
             CurrentWaterSource = null;

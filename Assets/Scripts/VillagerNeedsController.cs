@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class VillagerNeedsController : MonoBehaviour, ISimulatable
+public class VillagerNeedsController : SimulatableBehaviour
 {
     public VillagerNeeds Needs { get; private set; }
     public VillagerEnvironment Environment {get; private set;}
@@ -36,18 +36,14 @@ public class VillagerNeedsController : MonoBehaviour, ISimulatable
         if (Environment == null)
             Debug.LogError($"{name} has no VillagerEnvironment component!");
 
-        }
-        public void Initialize(VillagerNeeds needs, VillagerData data)
+    }
+    public void Initialize(VillagerNeeds needs, VillagerData data)
     {
         Needs = needs;
         Data = data;
     }
 
-    // ISimulatable
-    public void Simulate(float deltaTime)
-    {
-        SimulateNeeds(deltaTime);
-    }
+ 
 
     public void SimulateNeeds(float dt)
     {
@@ -115,16 +111,8 @@ public class VillagerNeedsController : MonoBehaviour, ISimulatable
         OnThirstChanged?.Invoke(Needs.thirst);
     }
 
-    private void OnEnable()
+   public override void Simulate(float deltaTime)
     {
-        // auto-register with SimulationManager
-        if (SimulationManager.Instance != null) 
-            SimulationManager.Instance.Register(this);
-    }
-
-    private void OnDisable()
-    {
-        if (SimulationManager.Instance != null) 
-            SimulationManager.Instance.Unregister(this);
+        SimulateNeeds(deltaTime);
     }
 }

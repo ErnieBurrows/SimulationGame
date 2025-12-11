@@ -9,18 +9,26 @@ public enum WorkEthic
     Bad
 }
 
-public class VillagerAIController : MonoBehaviour, ISimulatable
+[RequireComponent(typeof(VillagerNeedsController))]
+public class VillagerAIController : SimulatableBehaviour
 {
-    [SerializeField] private VillagerNeedsController needsController;
-
     private readonly List<Resource> waterSources = new List<Resource>();
-    private NavMeshAgent agent;
-
     private Resource currentTarget = null;
     private bool isGoingToWater = false;
 
-    private void OnEnable()
+    // References
+    private VillagerNeedsController needsController;
+    private NavMeshAgent agent;
+
+    private void Awake()
     {
+        needsController = GetComponent<VillagerNeedsController>();
+        agent = GetComponent<NavMeshAgent>();
+    }
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
         if (needsController != null)
         {
             needsController.OnHungry += HandleOnHungry;
@@ -28,12 +36,11 @@ public class VillagerAIController : MonoBehaviour, ISimulatable
             needsController.OnHydrated += HandleOnHydrated;
             needsController.OnFull += HandleOnFull;
         }
-
-        SimulationManager.Instance?.Register(this);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         if (needsController != null)
         {
             needsController.OnHungry -= HandleOnHungry;
@@ -41,8 +48,6 @@ public class VillagerAIController : MonoBehaviour, ISimulatable
             needsController.OnHydrated -= HandleOnHydrated;
             needsController.OnFull -= HandleOnFull;
         }
-
-        SimulationManager.Instance?.Unregister(this);
     }
 
     private void Start()
@@ -50,12 +55,10 @@ public class VillagerAIController : MonoBehaviour, ISimulatable
         foreach (var res in FindObjectsByType<Resource>(FindObjectsSortMode.None))
         {
             waterSources.Add(res);
-        }
-
-        agent = GetComponent<NavMeshAgent>();
+        }        
     }
 
-    public void Simulate(float dt)
+    public override void Simulate(float dt)
     {
         HandleWaterArrival();
     }

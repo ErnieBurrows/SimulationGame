@@ -20,18 +20,30 @@ public class SimulationManager : MonoBehaviour
         get
         {
             if (_applicationIsQuitting) return null;
-            if (_instance == null) _instance = FindFirstObjectByType<SimulationManager>();
+
+            if (_instance == null) 
+                _instance = FindFirstObjectByType<SimulationManager>();
+
             return _instance;
         }
     }
 
     private void Awake()
     {
-        if (_instance == null) { _instance = this; DontDestroyOnLoad(gameObject); }
-        else if (_instance != this) Destroy(gameObject);
+        if (_instance == null) 
+        { 
+            _instance = this; 
+            DontDestroyOnLoad(gameObject); 
+        }
+        else if (_instance != this) 
+            Destroy(gameObject);
     }
 
-    private void OnDestroy() { if (_instance == this) _applicationIsQuitting = true; }
+    private void OnDestroy() 
+    { 
+        if (_instance == this) 
+            _applicationIsQuitting = true; 
+    }
     #endregion
 
     private HashSet<ISimulatable> simulatables = new HashSet<ISimulatable>();
@@ -41,14 +53,7 @@ public class SimulationManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        yield return null; // wait one frame
-        
-        // Auto-register existing objects with ISimulatable
-        foreach (MonoBehaviour monoBehaviour in FindObjectsByType<MonoBehaviour>(sortMode: FindObjectsSortMode.None))
-        {
-            if (monoBehaviour is ISimulatable simulatable) 
-                Register(simulatable);
-        }
+        yield return null; // Wait one frame
 
         StartCoroutine(SimulateLoop());
     }
