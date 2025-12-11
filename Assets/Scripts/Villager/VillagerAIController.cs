@@ -14,8 +14,6 @@ public class VillagerAIController : SimulatableBehaviour
 {
     private readonly List<Resource> waterSources = new List<Resource>();
     private readonly List<Resource> foodSources = new List<Resource>();
-    private Resource currentTarget = null;
-    private bool isGoingToWater = false;
 
     // References
     private VillagerNeedsController needsController;
@@ -64,7 +62,6 @@ public class VillagerAIController : SimulatableBehaviour
 
     public override void Simulate(float dt)
     {
-        HandleWaterArrival();
     }
 
     private void HandleOnThirsty() 
@@ -129,37 +126,6 @@ public class VillagerAIController : SimulatableBehaviour
     }
 
 
-    private void HandleWaterArrival()
-    {
-        if (!isGoingToWater || currentTarget == null)
-            return;
-
-        // Wait until navmesh reaches the target
-        if (agent.pathPending) return;
-
-        if (agent.remainingDistance <= agent.stoppingDistance)
-        {
-            // DRINKING HAPPENS HERE
-            DrinkFromResource();
-
-            // Reset state
-            isGoingToWater = false;
-            currentTarget = null;
-
-            // Wander afterward
-            WanderRandomly();
-        }
-    }
-
-    private void DrinkFromResource()
-    {
-        float maxDrink = needsController.Needs.maxThirst - needsController.Needs.thirst;
-        if (maxDrink <= 0) return;
-
-        float amount = currentTarget.Withdraw(maxDrink);
-        needsController.AddWater(amount); // THIS TRIGGERS UI UPDATE!
-    }
-
     private void WanderRandomly()
     {
         if (agent == null) return;
@@ -171,7 +137,7 @@ public class VillagerAIController : SimulatableBehaviour
         {
             destination = RandomNavmeshLocation(15f);
 
-            if (!IsPointInWater(destination))
+            if (!IsPointInResource(destination))
             {
                 agent.SetDestination(destination);
                 return;
@@ -195,12 +161,12 @@ public class VillagerAIController : SimulatableBehaviour
 
 
     // HELPER SCRIPTS
-   private bool IsPointInWater(Vector3 point)
+   private bool IsPointInResource(Vector3 point)
     {
         Collider[] hits = Physics.OverlapSphere(point, 0.25f);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Water"))
+            if (hit.CompareTag("Resource"))
                 return true;
         }
 

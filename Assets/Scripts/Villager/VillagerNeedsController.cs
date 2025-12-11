@@ -3,11 +3,10 @@ using UnityEngine;
 
 public class VillagerNeedsController : SimulatableBehaviour
 {
+    [SerializeField] private VillagerNeedsConfig Config;
     public VillagerNeeds Needs { get; private set; }
     public VillagerEnvironment Environment {get; private set;}
     public VillagerData Data { get; private set; }
-    [SerializeField] private VillagerNeedsConfig Config;
-
 
     public event Action<float> OnThirstChanged;
     public event Action<float> OnHungerChanged;
