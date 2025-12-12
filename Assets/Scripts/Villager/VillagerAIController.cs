@@ -1,184 +1,158 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum WorkEthic
-{
-    Extreme,
-    Average,
-    Bad
-}
 
-[RequireComponent(typeof(VillagerNeedsController))]
 public class VillagerAIController : SimulatableBehaviour
 {
-    private readonly List<Resource> waterSources = new List<Resource>();
-    private readonly List<Resource> foodSources = new List<Resource>();
-
-    // References
-    private VillagerNeedsController needsController;
     private NavMeshAgent agent;
+    private VillagerNeedsController needs;
 
-    // Jobs
-    private bool hasJob = false;
+    private Job currentJob;
 
-    private void Awake()
+    protected void Awake()
     {
-        needsController = GetComponent<VillagerNeedsController>();
         agent = GetComponent<NavMeshAgent>();
+        needs = GetComponent<VillagerNeedsController>();
     }
+
     protected override void OnEnable()
     {
         base.OnEnable();
 
-        if (needsController != null)
-        {
-            needsController.OnHungry += HandleOnHungry;
-            needsController.OnThirsty += HandleOnThirsty;
-            needsController.OnHydrated += HandleOnHydrated;
-            needsController.OnFull += HandleOnFull;
-        }
+        needs.OnThirsty += HandleThirsty;
+        needs.OnHungry += HandleHungry;
+        needs.OnHydrated += HandleNeedsSatisfied;
+        needs.OnFull += HandleNeedsSatisfied;
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
-        if (needsController != null)
-        {
-            needsController.OnHungry -= HandleOnHungry;
-            needsController.OnThirsty -= HandleOnThirsty;
-            needsController.OnHydrated -= HandleOnHydrated;
-            needsController.OnFull -= HandleOnFull;
-        }
-    }
 
-    private void Start()
-    {
-        foreach (Resource resource in FindObjectsByType<Resource>(FindObjectsSortMode.None))
-        {
-            if (resource.resourceType == ResourceType.Water)
-                waterSources.Add(resource);
-            if (resource.resourceType == ResourceType.Food)
-                foodSources.Add(resource);
-        }        
+        needs.OnThirsty -= HandleThirsty;
+        needs.OnHungry -= HandleHungry;
+        needs.OnHydrated -= HandleNeedsSatisfied;
+        needs.OnFull -= HandleNeedsSatisfied;
     }
 
     public override void Simulate(float dt)
     {
-        if (!hasJob)
+        // Needs override jobs
+        if (needs.Environment.IsInWater || needs.Environment.IsInFood)
+            return;
+
+        if (currentJob != null)
         {
-            Debug.Log(" Player has no job");
-            hasJob = true;
-        }
-    }
-
-    private void HandleOnThirsty() 
-    { 
-        ChooseBestResource(ResourceType.Water); 
-    }
-
-    private void HandleOnHungry()
-    {
-        ChooseBestResource(ResourceType.Food);
-    }
-    private void HandleOnFull()
-    {
-        WanderRandomly(); 
-    }
-    private void HandleOnHydrated() 
-    {
-        WanderRandomly(); 
-    }
-
-    private void ChooseBestResource(ResourceType type)
-    {
-        if (agent == null) return; 
-
-        if (type == ResourceType.Water && waterSources.Count == 0) return;
-        if (type == ResourceType.Food && foodSources.Count == 0) return; 
-
-        Resource best = null;
-        List<Resource> resourceList = new List<Resource>(); 
-        float bestScore = float.MinValue;
-        float need;
-
-        if (type == ResourceType.Water)
-        {
-            need = needsController.Needs.maxThirst - needsController.Needs.thirst;
-            resourceList = waterSources;
-        }
-        if (type == ResourceType.Food)
-        {
-            need = needsController.Needs.maxHunger - needsController.Needs.hunger;
-            resourceList = foodSources;
-        }
-
-        foreach (Resource resource in resourceList)
-        {
-            if (resource == null || resource.currentAmount <= 0) continue;
-
-            float dist = Vector3.Distance(transform.position, resource.transform.position);
-            float score = resource.currentAmount - dist * 0.1f;
-
-            if (score > bestScore)
+            if (!agent.pathPending &&
+                agent.remainingDistance <= agent.stoppingDistance)
             {
-                bestScore = score;
-                best = resource;
+                CompleteJob();
             }
         }
-
-        if (best != null)
+        else
         {
-            agent.SetDestination(best.transform.position);
+            TryTakeJob();
         }
     }
 
+    private void CompleteJob()
+    {
+        currentJob.onComplete?.Invoke();
+        currentJob = null;
+    }
 
-    private void WanderRandomly()
+    // ---------------- NEEDS ----------------
+
+    private void HandleThirsty()
+    {
+        MoveToClosestResource(ResourceType.Water);
+        CancelCurrentJob();
+    }
+
+    private void HandleHungry()
+    {
+        MoveToClosestResource(ResourceType.Food);
+        CancelCurrentJob();
+    }
+
+    private void HandleNeedsSatisfied()
+    {
+        ClearDestination();
+    }
+
+    // ---------------- JOBS ----------------
+
+    private void TryTakeJob()
+    {
+        currentJob = JobManager.Dequeue();
+        if (currentJob == null)
+        {
+            Wander();
+            return;
+        }
+
+        agent.SetDestination(currentJob.location);
+    }
+
+    private void CancelCurrentJob()
+    {
+        if (currentJob != null)
+        {
+            JobManager.Enqueue(currentJob); 
+            currentJob = null;
+        }
+    }
+
+    // ---------------- MOVEMENT ----------------
+
+    private void MoveToClosestResource(ResourceType type)
+    {
+        Resource best = ResourceRegistry.GetClosest(type, transform.position);
+        if (best != null)
+            agent.SetDestination(best.transform.position);
+    }
+
+    private void ClearDestination()
+    {
+        if (agent.hasPath)
+            agent.ResetPath();
+    }
+
+    private void Wander()
     {
         if (agent == null) return;
 
-        Vector3 destination;
-
-        // Try up to N times to find a non-water location
         for (int i = 0; i < 10; i++)
         {
-            destination = RandomNavmeshLocation(15f);
+            Vector3 point = RandomNavmeshLocation(50f);
 
-            if (!IsPointInResource(destination))
+            if (!IsPointInsideResource(point))
             {
-                agent.SetDestination(destination);
+                agent.SetDestination(point);
                 return;
             }
         }
 
-        // Fallback: last resort, just move a little bit away from current position
-        destination = transform.position + (transform.forward * 3f);
-        agent.SetDestination(destination);
+        // Fallback: move slightly forward
+        agent.SetDestination(transform.position + transform.forward * 2f);
     }
-
 
     private Vector3 RandomNavmeshLocation(float radius)
     {
-        Vector3 randomPos = Random.insideUnitSphere * radius + transform.position;
+        Vector3 random = Random.insideUnitSphere * radius + transform.position;
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPos, out hit, radius, NavMesh.AllAreas))
-            return hit.position;
-        return transform.position;
+        NavMesh.SamplePosition(random, out hit, radius, NavMesh.AllAreas);
+        return hit.position;
     }
 
-
-    // HELPER SCRIPTS
-   private bool IsPointInResource(Vector3 point)
+    private bool IsPointInsideResource(Vector3 point)
     {
-        Collider[] hits = Physics.OverlapSphere(point, 0.25f);
+        Collider[] hits = Physics.OverlapSphere(point, 0.3f);
         foreach (var hit in hits)
         {
             if (hit.CompareTag("Resource"))
                 return true;
         }
-
         return false;
     }
-
 }

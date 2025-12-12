@@ -40,4 +40,14 @@ public class Resource : MonoBehaviour
         if (floatingUI != null)
             floatingUI.UpdateCurrentResourceAmount(currentAmount / maxAmount);
     }
+
+    private void OnEnable()
+    {
+        ResourceRegistry.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        ResourceRegistry.Unregister(this);
+    }
 }
