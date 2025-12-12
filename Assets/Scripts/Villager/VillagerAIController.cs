@@ -19,6 +19,9 @@ public class VillagerAIController : SimulatableBehaviour
     private VillagerNeedsController needsController;
     private NavMeshAgent agent;
 
+    // Jobs
+    private bool hasJob = false;
+
     private void Awake()
     {
         needsController = GetComponent<VillagerNeedsController>();
@@ -62,6 +65,11 @@ public class VillagerAIController : SimulatableBehaviour
 
     public override void Simulate(float dt)
     {
+        if (!hasJob)
+        {
+            Debug.Log(" Player has no job");
+            hasJob = true;
+        }
     }
 
     private void HandleOnThirsty() 
