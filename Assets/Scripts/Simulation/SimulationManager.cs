@@ -119,4 +119,15 @@ public class SimulationManager : MonoBehaviour
     {
         simulationSpeed = newSpeed;
     }
+
+    public float GetMovementMultiplier()
+    {
+        return simulationSpeed switch
+        {
+            SimulationSpeed.Paused => 0f,
+            SimulationSpeed.Fast => 2f,
+            SimulationSpeed.Fastest => 4f,
+            _ => 1f,
+        };
+    }
 }

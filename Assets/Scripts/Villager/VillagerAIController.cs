@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-
+// Todo: Change to a system of speed where there is an action that is called when the speed is changed.
+// Todo: Put this action in SimulatableBehaviour.
+// Todo: Make sure animationSpeed scales with it as well.
 public class VillagerAIController : SimulatableBehaviour
 {
     private NavMeshAgent agent;
@@ -9,10 +11,24 @@ public class VillagerAIController : SimulatableBehaviour
 
     private Job currentJob;
 
+    // Simulation Speed
+    private float baseSpeed;
+
     protected void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         needs = GetComponent<VillagerNeedsController>();
+
+        baseSpeed = agent.speed;
+    }
+
+    private void Update()
+    {
+        var sim = SimulationManager.Instance;
+        if (sim == null) return;
+
+        agent.speed = baseSpeed * sim.GetMovementMultiplier();
+        agent.isStopped = sim.simulationSpeed == SimulationSpeed.Paused;
     }
 
     protected override void OnEnable()

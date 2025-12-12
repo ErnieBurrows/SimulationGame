@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Building : JobSource
 {
-    private void Start()
+     private void Start()
     {
         CreateInitialJobs();
     }
