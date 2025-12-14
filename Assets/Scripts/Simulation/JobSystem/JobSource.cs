@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public abstract class JobSource : MonoBehaviour
+public abstract class JobSource : SimulatableBehaviour
 {
     protected void CreateJob(Job job)
     {
