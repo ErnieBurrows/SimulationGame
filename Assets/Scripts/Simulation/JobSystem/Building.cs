@@ -19,7 +19,7 @@ public class Building : JobSource
 
     private void OnBuilt()
     {
-
+        transform.localScale *= 2.0f;
         Debug.Log("Building completed!");
     }
 }

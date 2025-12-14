@@ -49,7 +49,7 @@ public class VillagerNeedsController : SimulatableBehaviour
         if (Needs == null) return;
 
         // --- DRINKING LOGIC ---
-        if (Environment.IsInWater && Environment.currentResource != null)
+        if (Environment.IsInWater && Environment.currentResource != null && Needs.thirst < Needs.thirstThreshold)
         {
             float need = Needs.maxThirst - Needs.thirst;
             if (need > 0)
@@ -74,7 +74,7 @@ public class VillagerNeedsController : SimulatableBehaviour
             Needs.thirst = Mathf.Clamp01(Needs.thirst);
         }
 
-        if (Environment.IsInFood && Environment.currentResource != null)
+        if (Environment.IsInFood && Environment.currentResource != null && Needs.hunger < Needs.hungerThreshold)
         {
             float need = Needs.maxHunger - Needs.hunger;
             if (need > 0)

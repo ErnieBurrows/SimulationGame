@@ -8,7 +8,6 @@ public class VillagerAIController : SimulatableBehaviour
 {
     private NavMeshAgent agent;
     private VillagerNeedsController needs;
-
     private Job currentJob;
 
     // Simulation Speed
@@ -81,7 +80,7 @@ public class VillagerAIController : SimulatableBehaviour
 
     private void HandleThirsty()
     {
-        MoveToClosestResource(ResourceType.Water);
+        MoveToClosestResource(ResourceType.WaterDrinkable);
         CancelCurrentJob();
     }
 

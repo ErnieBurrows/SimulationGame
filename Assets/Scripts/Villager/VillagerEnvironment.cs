@@ -13,7 +13,7 @@ public class VillagerEnvironment : MonoBehaviour
         {
             switch (resource.resourceType)
             {
-                case ResourceType.Water:
+                case ResourceType.WaterDrinkable:
                     IsInWater = true;
                 break;
 
