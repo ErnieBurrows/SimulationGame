@@ -19,6 +19,7 @@ public class Building : JobSource
 
     private void OnBuilt()
     {
+
         Debug.Log("Building completed!");
     }
 }
