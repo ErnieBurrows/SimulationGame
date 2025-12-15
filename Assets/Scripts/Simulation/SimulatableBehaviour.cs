@@ -5,15 +5,31 @@ using UnityEngine;
 /// </summary>
 public abstract class SimulatableBehaviour : MonoBehaviour, ISimulatable
 {
+    private SimulationManager simulationManager;
     protected virtual void OnEnable()
     {
-        SimulationManager.Instance?.Register(this);
+        simulationManager = SimulationManager.Instance;
+        
+        if (simulationManager == null) return;
+        
+        simulationManager.Register(this);
+        simulationManager.OnSimulationSpeedChanged += HandleSimulationSpeedChange;
     }
 
     protected virtual void OnDisable()
     {
-        SimulationManager.Instance?.Unregister(this);
+        if (simulationManager == null) return;
+
+        simulationManager.Unregister(this);
+        simulationManager.OnSimulationSpeedChanged -= HandleSimulationSpeedChange;
+        
+        simulationManager = null;
     }
 
     public abstract void Simulate(float dt);
+
+    public virtual void HandleSimulationSpeedChange()
+    {
+        
+    }
 }

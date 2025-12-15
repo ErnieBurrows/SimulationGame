@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,8 +42,11 @@ public class SimulationManager : MonoBehaviour
 
     private void OnDestroy() 
     { 
-        if (_instance == this) 
+        if (_instance == this)
+        {
             _applicationIsQuitting = true; 
+            _instance = null;
+        }
     }
     #endregion
 
@@ -50,6 +54,8 @@ public class SimulationManager : MonoBehaviour
 
     [SerializeField] private float baseTickSeconds = 0.2f; // Base real seconds per simulation tick at Normal
     [HideInInspector] public SimulationSpeed simulationSpeed = SimulationSpeed.Normal;
+
+    public event Action OnSimulationSpeedChanged;
 
     private IEnumerator Start()
     {
@@ -118,6 +124,7 @@ public class SimulationManager : MonoBehaviour
     public void SetSimulationSpeed(SimulationSpeed newSpeed)
     {
         simulationSpeed = newSpeed;
+        OnSimulationSpeedChanged?.Invoke();
     }
 
     public float GetMovementMultiplier()

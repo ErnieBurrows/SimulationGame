@@ -21,17 +21,6 @@ public class VillagerAIController : SimulatableBehaviour
         baseSpeed = agent.speed;
     }
 
-    private void Update()
-    {
-        var sim = SimulationManager.Instance;
-        if (sim == null) return;
-
-
-        // Todo: move this shit to Simulate();
-        agent.speed = baseSpeed * sim.GetMovementMultiplier();
-        agent.isStopped = sim.simulationSpeed == SimulationSpeed.Paused;
-    }
-
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -70,6 +59,17 @@ public class VillagerAIController : SimulatableBehaviour
         {
             TryTakeJob();
         }
+    }
+
+    public override void HandleSimulationSpeedChange()
+    {
+        base.HandleSimulationSpeedChange();
+
+        var sim = SimulationManager.Instance;
+        if (sim == null) return;
+        
+        agent.speed = baseSpeed * sim.GetMovementMultiplier();
+        agent.isStopped = sim.simulationSpeed == SimulationSpeed.Paused;
     }
 
     private void CompleteJob()
