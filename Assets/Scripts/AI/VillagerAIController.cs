@@ -26,6 +26,8 @@ public class VillagerAIController : SimulatableBehaviour
         var sim = SimulationManager.Instance;
         if (sim == null) return;
 
+
+        // Todo: move this shit to Simulate();
         agent.speed = baseSpeed * sim.GetMovementMultiplier();
         agent.isStopped = sim.simulationSpeed == SimulationSpeed.Paused;
     }

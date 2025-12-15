@@ -44,6 +44,7 @@ public class WaterPumpJobSource : JobSource
 
      private void OnPumpJobComplete()
     {
+        transform.localScale *= 2.0f;
         waterResource.Add(waterPerJob);
         jobPending = false;
     }
