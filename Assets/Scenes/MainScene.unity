@@ -226,7 +226,7 @@ Transform:
   m_GameObject: {fileID: 67381635}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23.03, y: 1.31, z: 0.48}
+  m_LocalPosition: {x: 30.49, y: 1.31, z: 0.48}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -247,6 +247,7 @@ MonoBehaviour:
   waterResource: {fileID: 93797659}
   waterPerJob: 5
   secondsPerJob: 5
+  simTimer: 0
 --- !u!114 &93797659 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5254187300740370840, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
@@ -721,6 +722,67 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1001 &488011530
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4867721995324793522, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_Name
+      value: Water (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380982684267317946, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -25.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 18.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
 --- !u!224 &494601442 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1301471283424233404, guid: 2e33caac07dc3bb4e9635d5298476c8e, type: 3}
@@ -2624,6 +2686,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Water
       objectReference: {fileID: 0}
+    - target: {fileID: 5254187300740370840, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
+      propertyPath: currentAmount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6751550302517531576, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.72
@@ -2690,6 +2756,7 @@ SceneRoots:
   - {fileID: 697361421}
   - {fileID: 6878485681040549867}
   - {fileID: 769445663}
+  - {fileID: 488011530}
   - {fileID: 3864681683822513317}
   - {fileID: 1245723125}
   - {fileID: 1510539122}
