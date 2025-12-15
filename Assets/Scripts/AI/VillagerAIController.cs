@@ -13,6 +13,8 @@ public class VillagerAIController : SimulatableBehaviour
     // Simulation Speed
     private float baseSpeed;
 
+    private bool isGettingFoodOrDrink = false;
+
     protected void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -44,8 +46,10 @@ public class VillagerAIController : SimulatableBehaviour
     public override void Simulate(float dt)
     {
         // Needs override jobs
-        if (needs.Environment.IsInWater || needs.Environment.IsInFood)
-            return;
+        // if (needs.Environment.IsInWater || needs.Environment.IsInFood)
+        //     return;
+
+        if (isGettingFoodOrDrink) return;
 
         if (currentJob != null)
         {
@@ -82,18 +86,25 @@ public class VillagerAIController : SimulatableBehaviour
 
     private void HandleThirsty()
     {
-        MoveToClosestResource(ResourceType.WaterDrinkable);
-        CancelCurrentJob();
+        if(TryMoveToClosestResource(ResourceType.WaterDrinkable))
+        {
+            isGettingFoodOrDrink = true;
+            CancelCurrentJob();
+        }
     }
 
     private void HandleHungry()
     {
-        MoveToClosestResource(ResourceType.Food);
-        CancelCurrentJob();
+        if(TryMoveToClosestResource(ResourceType.Food))
+        {
+            isGettingFoodOrDrink = true;
+            CancelCurrentJob();      
+        }
     }
 
     private void HandleNeedsSatisfied()
     {
+        isGettingFoodOrDrink = false;
         ClearDestination();
     }
 
@@ -122,11 +133,16 @@ public class VillagerAIController : SimulatableBehaviour
 
     // ---------------- MOVEMENT ----------------
 
-    private void MoveToClosestResource(ResourceType type)
+    private bool TryMoveToClosestResource(ResourceType type)
     {
         Resource best = ResourceRegistry.GetClosest(type, transform.position);
         if (best != null)
+        {
             agent.SetDestination(best.transform.position);
+            return true;
+        }
+        else
+            return false;
     }
 
     private void ClearDestination()

@@ -105,30 +105,29 @@ public class VillagerNeedsController : SimulatableBehaviour
 
         // OnHungry and OnThirst Actions
         if (Needs.thirst < Needs.thirstThreshold && !thirstyTriggered)
-        {
-            thirstyTriggered = true;
-            OnThirsty?.Invoke();
-        }
+            HandleThirsty();
         else if (Needs.thirst >= Needs.thirstThreshold)
-        {
             thirstyTriggered = false;
-        }
 
         if(Needs.hunger < Needs.hungerThreshold && !hungryTriggered)
-        {
-            hungryTriggered = true;
-            OnHungry?.Invoke();
-        }
+            HandleHunger();
         else if (Needs.thirst >= Needs.thirstThreshold)
-        {
             hungryTriggered = false;
-        }
         
     }
 
 
-    private void HandleThirsty() => OnThirsty?.Invoke();
-    private void HandleHunger() => OnHungry?.Invoke();
+    private void HandleThirsty()
+    {
+        thirstyTriggered = true;
+        OnThirsty?.Invoke();
+    }  
+    private void HandleHunger()
+    {
+        hungryTriggered = true;
+        OnHungry?.Invoke();
+    } 
+        
 
     public void DrainWater()
     {

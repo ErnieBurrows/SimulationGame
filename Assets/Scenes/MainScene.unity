@@ -1361,6 +1361,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Food
       objectReference: {fileID: 0}
+    - target: {fileID: 3664406789014821224, guid: da71538cfbf2f7f4988f2db942a5a062, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160646905875737154, guid: da71538cfbf2f7f4988f2db942a5a062, type: 3}
+      propertyPath: resourceType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2571,6 +2579,14 @@ PrefabInstance:
     - target: {fileID: 3664406789014821224, guid: da71538cfbf2f7f4988f2db942a5a062, type: 3}
       propertyPath: m_Name
       value: Food
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664406789014821224, guid: da71538cfbf2f7f4988f2db942a5a062, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160646905875737154, guid: da71538cfbf2f7f4988f2db942a5a062, type: 3}
+      propertyPath: resourceType
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
