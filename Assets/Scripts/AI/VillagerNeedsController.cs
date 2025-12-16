@@ -70,7 +70,7 @@ public class VillagerNeedsController : SimulatableBehaviour
         else
         {
             hydratedTriggered = false;
-            Needs.thirst -= Config.thirstDrainRate * dt;
+            Needs.thirst -= Config.thirstDrainRate;
             Needs.thirst = Mathf.Clamp01(Needs.thirst);
         }
 
@@ -93,7 +93,7 @@ public class VillagerNeedsController : SimulatableBehaviour
         else
         {
             fullTriggered = false;
-            Needs.hunger -= Config.hungerDrainRate * dt;
+            Needs.hunger -= Config.hungerDrainRate;
             Needs.hunger = Mathf.Clamp01(Needs.hunger);
         }
 
@@ -111,7 +111,7 @@ public class VillagerNeedsController : SimulatableBehaviour
 
         if(Needs.hunger < Needs.hungerThreshold && !hungryTriggered)
             HandleHunger();
-        else if (Needs.thirst >= Needs.thirstThreshold)
+        else if (Needs.hunger >= Needs.hungerThreshold)
             hungryTriggered = false;
         
     }

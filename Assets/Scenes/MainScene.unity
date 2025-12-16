@@ -185,7 +185,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 81032119abf966d4a9b5ff59516aba4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -245,9 +245,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Building
   waterResource: {fileID: 93797659}
-  waterPerJob: 5
-  secondsPerJob: 5
-  simTimer: 0
+  maxHeldWater: 5
+  waterPumpedPerTick: 0.02
+  currentHeldWater: 0
 --- !u!114 &93797659 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5254187300740370840, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
@@ -1728,6 +1728,7 @@ GameObject:
   - component: {fileID: 1799959743}
   - component: {fileID: 1799959742}
   - component: {fileID: 1799959741}
+  - component: {fileID: 1799959745}
   m_Layer: 6
   m_Name: Ground
   m_TagString: Untagged
@@ -1829,6 +1830,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1799959745
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799959740}
+  m_Enabled: 1
+  m_CellSize: {x: 0.5, y: 0.5, z: 0.5}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1001 &1859115755
 PrefabInstance:
   m_ObjectHideFlags: 0

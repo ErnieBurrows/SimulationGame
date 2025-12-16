@@ -4,12 +4,10 @@ public class WaterPumpJobSource : JobSource
 {
     [Header("Production")]
     [SerializeField] private Resource waterResource;
-    [SerializeField] private float waterPerJob = 5f;
+    [SerializeField] private float maxHeldWater = 5f;
+    [SerializeField] private float waterPumpedPerTick = 0.02f;
+    [SerializeField] private float currentHeldWater = 0f;
 
-    [Header("Timing (Simulation Time)")]
-    [SerializeField] private float secondsPerJob = 5f;
-
-    [SerializeField] private float simTimer = 0f;
     private bool jobPending = false;
 
     public override void Simulate(float dt)
@@ -22,12 +20,12 @@ public class WaterPumpJobSource : JobSource
         if (jobPending)
             return;
 
-        simTimer += dt;
+        currentHeldWater += waterPumpedPerTick;
 
-        if (simTimer >= secondsPerJob)
+        if (currentHeldWater >= maxHeldWater)
         {
             CreatePumpJob();
-            simTimer = 0f;
+            currentHeldWater = 0f;
             jobPending = true;
         }
     }
@@ -42,10 +40,10 @@ public class WaterPumpJobSource : JobSource
         });
     }
 
-     private void OnPumpJobComplete()
+    private void OnPumpJobComplete()
     {
         transform.localScale *= 2.0f;
-        waterResource.Add(waterPerJob);
+        waterResource.Add(maxHeldWater);
         jobPending = false;
     }
 }
