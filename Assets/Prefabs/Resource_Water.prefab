@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Resource_Water
       objectReference: {fileID: 0}
+    - target: {fileID: 4139880229743526947, guid: 56f2ebedab388ef48ac65ea7fa75e12d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
