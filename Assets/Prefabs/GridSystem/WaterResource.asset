@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 824acd561ab38c64a8b8ddc8dac2676a, type: 3}
-  m_Name: BuildingDefinition
+  m_Name: WaterResource
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   prefab: {fileID: 4867721995324793522, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
   size: {x: 1, y: 1}

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Todo: This should maybe be a singleton
 public class GridPlacer : MonoBehaviour
 {
     [Header("Refs")]
@@ -24,10 +25,6 @@ public class GridPlacer : MonoBehaviour
     // Cache preview renderers so we can tint easily
     private Renderer[] previewRenderers;
 
-    void Start()
-    {
-        StartPlacing(defToPlace);
-    }
     public void StartPlacing(BuildingDefinition def)
     {
         CancelPlacing();
