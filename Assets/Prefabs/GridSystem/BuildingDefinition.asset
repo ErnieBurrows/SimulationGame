@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 4867721995324793522, guid: a493ce1c0a276d44cb306387e16a23df, type: 3}
   size: {x: 1, y: 1}
   allowRotation: 1
-  previewMaterial: {fileID: 2100000, guid: f1186d83c3711ab4cb752256d7af520c, type: 2}
+  previewMaterial: {fileID: 2100000, guid: b01ce05221bdc5c4bbcc3625310f9783, type: 2}
