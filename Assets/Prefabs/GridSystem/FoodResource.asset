@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   prefab: {fileID: 3664406789014821224, guid: da71538cfbf2f7f4988f2db942a5a062, type: 3}
   size: {x: 1, y: 1}
+  offset: {x: 0, y: 2.5, z: 0}
   allowRotation: 1
   previewMaterial: {fileID: 2100000, guid: b01ce05221bdc5c4bbcc3625310f9783, type: 2}

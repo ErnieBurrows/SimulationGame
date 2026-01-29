@@ -71,9 +71,11 @@ public class GridPlacer : MonoBehaviour
 
         Vector2Int anchorCell = grid.WorldToCell(hit);
         Vector3 snappedWorld = grid.CellToWorldCenter(anchorCell);
+        Vector3 offsetAdjustPosition = snappedWorld + currentDef.offset; 
+
 
         // move + rotate preview
-        previewInstance.transform.position = snappedWorld;
+        previewInstance.transform.position = offsetAdjustPosition;
         previewInstance.transform.rotation = Quaternion.Euler(0, rotationSteps * 90f, 0);
 
         // validate footprint
@@ -84,7 +86,7 @@ public class GridPlacer : MonoBehaviour
 
         if (canPlace && Input.GetMouseButtonDown(0))
         {
-            PlaceBuilding(snappedWorld, rotationSteps, footprint);
+            PlaceBuilding(offsetAdjustPosition, rotationSteps, footprint);
         }
 
         // right click cancels (optional)
