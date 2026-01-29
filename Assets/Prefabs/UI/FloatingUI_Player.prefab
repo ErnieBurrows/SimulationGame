@@ -260,6 +260,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Food
       objectReference: {fileID: 0}
+    - target: {fileID: 338008697340751220, guid: 1d164312328a0c946bafd96a7bc61910, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 338008697340751220, guid: 1d164312328a0c946bafd96a7bc61910, type: 3}
+      propertyPath: m_Color.g
+      value: 0.1745726
+      objectReference: {fileID: 0}
+    - target: {fileID: 338008697340751220, guid: 1d164312328a0c946bafd96a7bc61910, type: 3}
+      propertyPath: m_Color.r
+      value: 0.4339623
+      objectReference: {fileID: 0}
     - target: {fileID: 1555320054627790487, guid: 1d164312328a0c946bafd96a7bc61910, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

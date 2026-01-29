@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 100469846582534433}
   - component: {fileID: 7818140486753175646}
   m_Layer: 0
-  m_Name: Villager_1
+  m_Name: Villager
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -312,8 +312,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cb65f954ce430f41b1369658666eb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  needsController: {fileID: 6834155811138922590}
-  workEthic: 1
 --- !u!114 &6525487462564125757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -627,18 +625,6 @@ PrefabInstance:
     - target: {fileID: 5291575870409559820, guid: 67692fa1d88ecbe40900934dbb6c9e5f, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6361957279320231151, guid: 67692fa1d88ecbe40900934dbb6c9e5f, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6361957279320231151, guid: 67692fa1d88ecbe40900934dbb6c9e5f, type: 3}
-      propertyPath: m_Color.g
-      value: 0.1745726
-      objectReference: {fileID: 0}
-    - target: {fileID: 6361957279320231151, guid: 67692fa1d88ecbe40900934dbb6c9e5f, type: 3}
-      propertyPath: m_Color.r
-      value: 0.4339623
       objectReference: {fileID: 0}
     - target: {fileID: 8501274617106865643, guid: 67692fa1d88ecbe40900934dbb6c9e5f, type: 3}
       propertyPath: m_Name
