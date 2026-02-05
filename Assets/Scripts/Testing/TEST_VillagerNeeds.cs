@@ -1,22 +1,25 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TEST_VillagerNeeds : MonoBehaviour
 {
-    public List<GameObject> villagers;
+    private List<VillagerNeedsController> villagers = new List<VillagerNeedsController>();
     public void DrainVillagersWater()
     {
-        foreach (GameObject villager in villagers)
+        villagers = FindObjectsByType<VillagerNeedsController>(FindObjectsSortMode.None).ToList();
+        foreach (VillagerNeedsController villager in villagers)
         {
-            villager.GetComponent<VillagerNeedsController>().DrainWater();
+            villager.DrainWater();
         }
     }
 
     public void DrainVillagersFood()
     {
-        foreach (GameObject villager in villagers)
+        villagers = FindObjectsByType<VillagerNeedsController>(FindObjectsSortMode.None).ToList();
+        foreach (VillagerNeedsController villager in villagers)
         {
-            villager.GetComponent<VillagerNeedsController>().DrainFood();
+            villager.DrainFood();
         }
     }
 }

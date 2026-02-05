@@ -288,9 +288,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1574074d68345294fb4e0231c9bdb977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  villagers:
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!4 &304552934
 Transform:
   m_ObjectHideFlags: 0

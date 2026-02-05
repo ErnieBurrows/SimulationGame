@@ -10,6 +10,7 @@ public class Villager : MonoBehaviour, IPointerClickHandler
     public VillagerNeedsController needsController;
     public VillagerNeeds needs;
     public VillagerData data;
+    public VillagerAIController controller;
 
     private void Awake()
     {
@@ -20,6 +21,9 @@ public class Villager : MonoBehaviour, IPointerClickHandler
 
         if (data == null) 
             data = new VillagerData(villagerName);
+        
+        if(controller == null)
+            controller = new VillagerAIController();
 
         needsController.Initialize(needs, data);
 
@@ -29,6 +33,6 @@ public class Villager : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        VillagerSelectionManager.Instance.Select(needsController);
+        VillagerSelectionManager.Instance.Select(this);
     }
 }

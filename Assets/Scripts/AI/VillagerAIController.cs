@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,8 +13,8 @@ public class VillagerAIController : SimulatableBehaviour
 
     // Simulation Speed
     private float baseSpeed;
-
     private bool isGettingFoodOrDrink = false;
+    public Action<string> OnJobChanged;
 
     protected void Awake()
     {
@@ -49,7 +50,11 @@ public class VillagerAIController : SimulatableBehaviour
         // if (needs.Environment.IsInWater || needs.Environment.IsInFood)
         //     return;
 
-        if (isGettingFoodOrDrink) return;
+        if (isGettingFoodOrDrink) 
+        {
+            OnJobChanged?.Invoke("Getting Food Or Drink");
+            return;
+        }
 
         if (currentJob != null)
         {
@@ -172,7 +177,7 @@ public class VillagerAIController : SimulatableBehaviour
 
     private Vector3 RandomNavmeshLocation(float radius)
     {
-        Vector3 random = Random.insideUnitSphere * radius + transform.position;
+        Vector3 random = UnityEngine.Random.insideUnitSphere * radius + transform.position;
         NavMeshHit hit;
         NavMesh.SamplePosition(random, out hit, radius, NavMesh.AllAreas);
         return hit.position;

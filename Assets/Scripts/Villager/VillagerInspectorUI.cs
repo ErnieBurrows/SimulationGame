@@ -2,6 +2,7 @@ using TMPro;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public enum PanelType
 {
@@ -9,15 +10,20 @@ public enum PanelType
     Behaviour,
     Count
 };
-
+// Todo: I need to adjust this logic so that the villager reference can come from somewhere other than serialized field.
+// Remeber we call this as a single inspector, so we pass in a new controller each time. Maybe on the show or something.
+// I also should change all references to just reference the Villager itself. Lets use Villager.cs as the main logic gate.
+// Villager.cs should hold public reference to everything
 public class VillagerInspectorUI : MonoBehaviour
 {
+    private Villager villager;
+    private VillagerNeedsController currentController;
+
     [Header("LeanTween Settings")]
     public float UIAnimationDuration = 0.25f;
     public LeanTweenType type;
     private Vector3 startPosition;
 
-    // Panel Selection
     [Header("Panel Selection References")]
     [SerializeField] private GameObject needsPanel;
     [SerializeField] private GameObject behaviourPanel;
@@ -35,8 +41,10 @@ public class VillagerInspectorUI : MonoBehaviour
     [SerializeField] private GameObject panel;
     [SerializeField] private Button closeButton;
 
-    private VillagerNeedsController current;
+    [Header("Current Task References")]
+    [SerializeField] private TextMeshProUGUI currentTaskText;
 
+   
     private void OnEnable()
     {
         closeButton.onClick.AddListener(Close);
@@ -49,10 +57,10 @@ public class VillagerInspectorUI : MonoBehaviour
         behaviourPanelButton.onClick.AddListener(() => 
         {
             ChangePanel(PanelType.Behaviour);
-        });
-    }    
+        });      
+    }
 
-     private void OnDisable()
+    private void OnDisable()
     {
         closeButton.onClick.RemoveListener(Close);
 
@@ -60,25 +68,34 @@ public class VillagerInspectorUI : MonoBehaviour
         behaviourPanelButton.onClick.RemoveAllListeners();
     }  
 
-    public void Show(VillagerNeedsController controller)
+    private void ChangeJobText(string currentTask)
     {
+        currentTaskText.text = currentTask;
+        Debug.Log("TEST");
+    }
+    public void Show(Villager villager)
+    {
+        this.villager = villager;
+        
+        villager.controller.OnJobChanged += ChangeJobText;
+
         // Unsubscribe from previous controller
-        if (current != null)
+        if (currentController != null)
         {
-            current.OnThirstChanged -= UpdateThirst;
-            current.OnHungerChanged -= UpdateHunger;
+            currentController.OnThirstChanged -= UpdateThirst;
+            currentController.OnHungerChanged -= UpdateHunger;
         }
 
-        current = controller;
+        currentController = villager.needsController;
 
         // Set the name
-        villagerName.text = current.Data.villagerName;
+        villagerName.text = currentController.Data.villagerName;
 
-        current.OnThirstChanged += UpdateThirst;
-        current.OnHungerChanged += UpdateHunger;
+        currentController.OnThirstChanged += UpdateThirst;
+        currentController.OnHungerChanged += UpdateHunger;
 
-        thirstBar.fillAmount = current.Needs.thirst;
-        hungerBar.fillAmount = current.Needs.hunger;
+        thirstBar.fillAmount = currentController.Needs.thirst;
+        hungerBar.fillAmount = currentController.Needs.hunger;
 
         panel.SetActive(true);
 
@@ -93,13 +110,15 @@ public class VillagerInspectorUI : MonoBehaviour
 
     public void Close()
     {
-        if (current != null)
+        villager.controller.OnJobChanged -= ChangeJobText;
+
+        if (currentController != null)
         {
-            current.OnThirstChanged -= UpdateThirst;
-            current.OnHungerChanged -= UpdateHunger;
+            currentController.OnThirstChanged -= UpdateThirst;
+            currentController.OnHungerChanged -= UpdateHunger;
         }
 
-        current = null;
+        currentController = null;
         
 
         LeanTween.moveY(panel, startPosition.y, UIAnimationDuration)

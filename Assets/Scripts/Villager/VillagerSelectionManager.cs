@@ -13,10 +13,10 @@ public class VillagerSelectionManager : MonoBehaviour
         Instance = this;
     }
 
-    public void Select(VillagerNeedsController controller)
+    public void Select(Villager villager)
     {
         // Case 1: Clicking the same villager = close inspector
-        if (current == controller)
+        if (current == villager.needsController)
         {
             inspectorUI.Close();
             current = null;
@@ -24,8 +24,8 @@ public class VillagerSelectionManager : MonoBehaviour
         }
 
         // Case 2: Switching to a new villager
-        current = controller;
-        inspectorUI.Show(controller);
+        current = villager.needsController;
+        inspectorUI.Show(villager);
     }
 
     public void ClearSelection()
