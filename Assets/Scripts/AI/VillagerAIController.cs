@@ -13,6 +13,7 @@ public class VillagerAIController : SimulatableBehaviour
 
     // Simulation Speed
     private float baseSpeed;
+    private bool isWandering = false;
     private bool isGettingFoodOrDrink = false;
     public Action<string> OnJobChanged;
 
@@ -66,7 +67,8 @@ public class VillagerAIController : SimulatableBehaviour
         }
         else
         {
-            TryTakeJob();
+            if (!TryTakeJob())
+                Wander();
         }
     }
 
@@ -74,7 +76,7 @@ public class VillagerAIController : SimulatableBehaviour
     {
         base.HandleSimulationSpeedChange();
 
-        var sim = SimulationManager.Instance;
+        SimulationManager sim = SimulationManager.Instance;
         if (sim == null) return;
         
         agent.speed = baseSpeed * sim.GetMovementMultiplier();
@@ -115,16 +117,14 @@ public class VillagerAIController : SimulatableBehaviour
 
     // ---------------- JOBS ----------------
 
-    private void TryTakeJob()
+    private bool TryTakeJob()
     {
         currentJob = JobManager.Dequeue();
-        if (currentJob == null)
-        {
-            Wander();
-            return;
-        }
+        
+        if(currentJob != null)
+            agent.SetDestination(currentJob.location);
 
-        agent.SetDestination(currentJob.location);
+        return currentJob != null;      
     }
 
     private void CancelCurrentJob()
@@ -156,10 +156,22 @@ public class VillagerAIController : SimulatableBehaviour
             agent.ResetPath();
     }
 
+    /// <summary>
+    /// Handles the agents current wandering state. If the agent is wandering it will check the distance left.
+    /// Otherwise it will find a position that is not within a resource.
+    /// </summary>
     private void Wander()
     {
+        
         if (agent == null) return;
 
+        if (isWandering)
+        {
+            if (agent.remainingDistance > 0.1) return;
+            
+                isWandering = false;
+        }
+        
         for (int i = 0; i < 10; i++)
         {
             Vector3 point = RandomNavmeshLocation(50f);
@@ -167,6 +179,7 @@ public class VillagerAIController : SimulatableBehaviour
             if (!IsPointInsideResource(point))
             {
                 agent.SetDestination(point);
+                isWandering = true;
                 return;
             }
         }
