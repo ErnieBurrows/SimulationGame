@@ -10,8 +10,6 @@ public class VillagerAIController : SimulatableBehaviour
     private NavMeshAgent agent;
     private VillagerNeedsController needs;
     private Job currentJob;
-
-    // Simulation Speed
     private float baseSpeed;
     private bool isWandering = false;
     private bool isGettingFoodOrDrink = false;
@@ -45,19 +43,10 @@ public class VillagerAIController : SimulatableBehaviour
         needs.OnFull -= HandleNeedsSatisfied;
     }
 
+    #region Main Simulation
     public override void Simulate(float dt)
     {
-        // Needs override jobs
-        // if (needs.Environment.IsInWater || needs.Environment.IsInFood)
-        //     return;
-
-        if (isGettingFoodOrDrink) 
-        {
-            Debug.Log("S");
-            Debug.Log($"[AI] Invoking OnJobChanged. Subs={(OnJobChanged == null ? 0 : OnJobChanged.GetInvocationList().Length)}");
-            OnJobChanged?.Invoke("Getting Food Or Drink");
-            return;
-        }
+        if (isGettingFoodOrDrink) return;
 
         if (currentJob != null)
         {
@@ -83,68 +72,90 @@ public class VillagerAIController : SimulatableBehaviour
         
         agent.speed = baseSpeed * sim.GetMovementMultiplier();
         agent.isStopped = sim.simulationSpeed == SimulationSpeed.Paused;
-    }
+    }   
+    #endregion
 
-    private void CompleteJob()
-    {
-        currentJob.onComplete?.Invoke();
-        currentJob = null;
-    }
-
-    // ---------------- NEEDS ----------------
-
+    #region Needs
     private void HandleThirsty()
     {
-        if(TryMoveToClosestResource(ResourceType.WaterDrinkable))
-        {
-            isGettingFoodOrDrink = true;
-            CancelCurrentJob();
-        }
+        if(!TryMoveToClosestResource(ResourceType.WaterDrinkable)) return;
+        
+        isGettingFoodOrDrink = true;
+
+        if(!TryCancelCurrentJob())
+            OnJobChanged?.Invoke(DebugCurrentStateText());
+        
     }
 
     private void HandleHungry()
     {
-        if(TryMoveToClosestResource(ResourceType.Food))
-        {
-            isGettingFoodOrDrink = true;
-            CancelCurrentJob();      
-        }
+        if(!TryMoveToClosestResource(ResourceType.Food)) return;
+        
+        isGettingFoodOrDrink = true;
+
+        if(!TryCancelCurrentJob())
+            OnJobChanged?.Invoke(DebugCurrentStateText()); 
+        
     }
 
     private void HandleNeedsSatisfied()
     {
         isGettingFoodOrDrink = false;
         ClearDestination();
+
+        OnJobChanged?.Invoke(DebugCurrentStateText());
     }
 
-    // ---------------- JOBS ----------------
+    #endregion
 
+    #region Jobs
     private bool TryTakeJob()
     {
         currentJob = JobManager.Dequeue();
         
         if(currentJob != null)
+        {
             agent.SetDestination(currentJob.location);
+            OnJobChanged?.Invoke(DebugCurrentStateText());
+        }
 
         return currentJob != null;      
     }
 
-    private void CancelCurrentJob()
+    private void CompleteJob()
     {
-        if (currentJob != null)
-        {
-            JobManager.Enqueue(currentJob); 
-            currentJob = null;
-        }
+        currentJob.onComplete?.Invoke();
+        currentJob = null;
+
+        OnJobChanged?.Invoke(DebugCurrentStateText());
+
     }
+
+    private bool TryCancelCurrentJob()
+    {
+        if (currentJob == null) return false;
+      
+        JobManager.Enqueue(currentJob);
+        currentJob = null;
+
+        OnJobChanged?.Invoke(DebugCurrentStateText()); 
+        
+
+        return true;
+    }
+
     public string DebugCurrentStateText()
     {
         if (isGettingFoodOrDrink) return "Getting Food Or Drink";
+
         if (currentJob != null) return $"Working: {currentJob.name}";
+
         return "Idle";
     }
 
-    // ---------------- MOVEMENT ----------------
+    #endregion
+
+    #region Movement
 
     private bool TryMoveToClosestResource(ResourceType type)
     {
@@ -214,4 +225,5 @@ public class VillagerAIController : SimulatableBehaviour
         }
         return false;
     }
+    #endregion
 }

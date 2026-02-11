@@ -11,8 +11,8 @@ public enum JobType
 
 public class Job
 {
+    public string name = "Default";
     public JobType type;
     public Vector3 location;
     public Action onComplete;
-    public string name = "Default";
 }

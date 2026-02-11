@@ -34,9 +34,11 @@ public class WaterPumpJobSource : JobSource
     {
         JobManager.Enqueue(new Job
         {
+            name = "Picking up water from pump",
             type = JobType.Craft,
             location = transform.position,
             onComplete = OnPumpJobComplete
+            
         });
     }
 
