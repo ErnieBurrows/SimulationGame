@@ -53,6 +53,8 @@ public class VillagerAIController : SimulatableBehaviour
 
         if (isGettingFoodOrDrink) 
         {
+            Debug.Log("S");
+            Debug.Log($"[AI] Invoking OnJobChanged. Subs={(OnJobChanged == null ? 0 : OnJobChanged.GetInvocationList().Length)}");
             OnJobChanged?.Invoke("Getting Food Or Drink");
             return;
         }
@@ -134,6 +136,12 @@ public class VillagerAIController : SimulatableBehaviour
             JobManager.Enqueue(currentJob); 
             currentJob = null;
         }
+    }
+    public string DebugCurrentStateText()
+    {
+        if (isGettingFoodOrDrink) return "Getting Food Or Drink";
+        if (currentJob != null) return $"Working: {currentJob.name}";
+        return "Idle";
     }
 
     // ---------------- MOVEMENT ----------------

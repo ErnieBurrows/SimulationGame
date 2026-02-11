@@ -71,28 +71,20 @@ public class VillagerInspectorUI : MonoBehaviour
     private void ChangeJobText(string currentTask)
     {
         currentTaskText.text = currentTask;
-        Debug.Log("TEST");
     }
-    public void Show(Villager villager)
-    {
-        this.villager = villager;
-        
-        villager.controller.OnJobChanged += ChangeJobText;
 
-        // Unsubscribe from previous controller
-        if (currentController != null)
+    public void Show(Villager villager)
+    {   
+        if (villager == null)
         {
-            currentController.OnThirstChanged -= UpdateThirst;
-            currentController.OnHungerChanged -= UpdateHunger;
+            Close();
+            return;
         }
 
-        currentController = villager.needsController;
+        RebindJobEvents(villager);
+        RebindNeedsEvents(villager);
 
-        // Set the name
         villagerName.text = currentController.Data.villagerName;
-
-        currentController.OnThirstChanged += UpdateThirst;
-        currentController.OnHungerChanged += UpdateHunger;
 
         thirstBar.fillAmount = currentController.Needs.thirst;
         hungerBar.fillAmount = currentController.Needs.hunger;
@@ -128,8 +120,43 @@ public class VillagerInspectorUI : MonoBehaviour
             {
                 panel.SetActive(false);
             });
-            
-        //panel.transform.position = startPosition;
+    }
+
+    private void RebindJobEvents(Villager newVillager)
+    {
+        // Unsubscribe old
+        if (villager?.controller != null)
+            villager.controller.OnJobChanged -= ChangeJobText;
+
+        villager = newVillager;
+
+        // Subscribe new
+        if (villager?.controller != null)
+            villager.controller.OnJobChanged += ChangeJobText;
+
+        // Initial sync (don’t rely on timing)
+        if (villager?.controller != null)
+            ChangeJobText(villager.controller.DebugCurrentStateText());
+    }
+
+    
+    private void RebindNeedsEvents(Villager newVillager)
+    {
+        // Unsubscribe old
+        if (currentController != null)
+        {
+            currentController.OnThirstChanged -= UpdateThirst;
+            currentController.OnHungerChanged -= UpdateHunger;
+        }
+
+        currentController = newVillager.needsController;
+
+        // Subscribe new (guard)
+        if (currentController != null)
+        {
+            currentController.OnThirstChanged += UpdateThirst;
+            currentController.OnHungerChanged += UpdateHunger;
+        }
     }
 
     private void UpdateThirst(float value) 

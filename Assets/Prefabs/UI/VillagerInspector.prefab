@@ -126,6 +126,7 @@ MonoBehaviour:
   villagerName: {fileID: 6323650609280723321}
   panel: {fileID: 6293850063680147434}
   closeButton: {fileID: 1249701640774647822}
+  currentTaskText: {fileID: 5992225714324205337}
 --- !u!1001 &3485893158124630349
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -735,3 +736,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6086810100051088468, guid: 72a920064e3e6834c83ae322e4de06d8, type: 3}
   m_PrefabInstance: {fileID: 6833762328905871896}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5992225714324205337 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1008471138921094401, guid: 72a920064e3e6834c83ae322e4de06d8, type: 3}
+  m_PrefabInstance: {fileID: 6833762328905871896}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
