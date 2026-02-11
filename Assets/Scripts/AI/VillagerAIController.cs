@@ -2,47 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 
-// Todo: Change to a system of speed where there is an action that is called when the speed is changed.
-// Todo: Put this action in SimulatableBehaviour.
-// Todo: Make sure animationSpeed scales with it as well.
-public class VillagerAIController : SimulatableBehaviour
+public partial class VillagerAIController : SimulatableBehaviour
 {
-    private NavMeshAgent agent;
-    private VillagerNeedsController needs;
-    private Job currentJob;
-    private float baseSpeed;
-    private bool isWandering = false;
-    private bool isGettingFoodOrDrink = false;
-    public Action<string> OnJobChanged;
-
-    protected void Awake()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        needs = GetComponent<VillagerNeedsController>();
-
-        baseSpeed = agent.speed;
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-
-        needs.OnThirsty += HandleThirsty;
-        needs.OnHungry += HandleHungry;
-        needs.OnHydrated += HandleNeedsSatisfied;
-        needs.OnFull += HandleNeedsSatisfied;
-    }
-
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-
-        needs.OnThirsty -= HandleThirsty;
-        needs.OnHungry -= HandleHungry;
-        needs.OnHydrated -= HandleNeedsSatisfied;
-        needs.OnFull -= HandleNeedsSatisfied;
-    }
-
     #region Main Simulation
     public override void Simulate(float dt)
     {
@@ -226,4 +187,47 @@ public class VillagerAIController : SimulatableBehaviour
         return false;
     }
     #endregion
+}
+
+// ----------- Variables, Awake, OnEnable, OnDisable ----------- 
+public partial class VillagerAIController : SimulatableBehaviour
+{
+      #region Private Variables
+    private NavMeshAgent agent;
+    private VillagerNeedsController needs;
+    private Job currentJob;
+    private float baseSpeed;
+    private bool isWandering = false;
+    private bool isGettingFoodOrDrink = false;
+    public Action<string> OnJobChanged;
+
+    #endregion
+
+    protected void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        needs = GetComponent<VillagerNeedsController>();
+
+        baseSpeed = agent.speed;
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        needs.OnThirsty += HandleThirsty;
+        needs.OnHungry += HandleHungry;
+        needs.OnHydrated += HandleNeedsSatisfied;
+        needs.OnFull += HandleNeedsSatisfied;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        needs.OnThirsty -= HandleThirsty;
+        needs.OnHungry -= HandleHungry;
+        needs.OnHydrated -= HandleNeedsSatisfied;
+        needs.OnFull -= HandleNeedsSatisfied;
+    }
 }
